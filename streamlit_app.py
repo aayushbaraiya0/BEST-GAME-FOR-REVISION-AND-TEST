@@ -1,10 +1,10 @@
 import streamlit as st
 import random
 
-# પેજ સેટઅપ અને ઓફિશિયલ ટાઇટલ
-st.set_page_config(page_title="Best Game for Revision and Test", page_icon="🎮", layout="wide")
+# layout="centered" કરવાથી આખી ગેમ સ્ક્રીનની વચ્ચે એકદમ નાની અને સ્લિમ થઈ જશે
+st.set_page_config(page_title="Best Game for Revision and Test", page_icon="🎮", layout="centered")
 
-# શાનદાર પ્યોર RGB અને ડાર્ક નિયોન ગેમિંગ થીમ
+# શાનદાર પ્યોર RGB અને સુપર સ્લિમ ગેમિંગ થીમ
 st.markdown("""
     <style>
     .stApp {
@@ -17,44 +17,43 @@ st.markdown("""
         50%{background-position:100% 19%}
         100%{background-position:0% 82%}
     }
-    div[data-testid="stColumn"], .stRadio, .stMarkdown, .stButton>button, .stSelectbox, .stTextInput {
+    /* બધા મેઈન બોક્સ કમ્પેક્ટ કરવા માટે */
+    .stRadio, .stMarkdown, .stButton>button, .stSelectbox, .stTextInput {
         background-color: rgba(10, 10, 15, 0.94) !important;
-        padding: 18px !important;
-        border-radius: 12px !important;
+        padding: 12px 16px !important;
+        border-radius: 10px !important;
         color: #ffffff !important;
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
         border: 1px solid #00ffff !important;
+        margin-bottom: 8px !important;
     }
     label[data-testid="stWidgetLabel"], div[data-testid="stRadio"] label, p, span {
         color: #ffffff !important;
+        font-size: 14px !important;
     }
-    h1, h2, h3 {
+    h1 {
         color: #00ffff !important;
         text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
         text-align: center;
+        font-size: 24px !important;
+        margin-bottom: 15px !important;
     }
-    /* નામ બોક્સનો ટેક્સ્ટ કલર ડાર્ક કાળો */
+    h2, h3 {
+        color: #00ffff !important;
+        font-size: 18px !important;
+    }
+    /* નામ લખવાના બોક્સનો ટેક્સ્ટ કલર ડાર્ક કાળો */
     input { 
         color: #000000 !important; 
         font-weight: bold !important;
+        height: 35px !important;
     }
     .ai-popup-box {
         background-color: rgba(15, 25, 35, 0.98) !important;
         border: 2px dashed #00ffff !important;
-        padding: 15px;
-        border-radius: 10px;
-        margin-top: 10px;
-    }
-    /* ફોટો ક્લિકેબલ લાગે તેવી સ્ટાઇલ */
-    .chanakya-photo {
-        cursor: pointer;
-        transition: transform 0.2s;
-        border: 2px solid #00ffff;
-        border-radius: 10px;
-    }
-    .chanakya-photo:hover {
-        transform: scale(1.05);
-        box-shadow: 0 0 15px #00ffff;
+        padding: 12px;
+        border-radius: 8px;
+        margin-top: 5px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -139,39 +138,18 @@ if "match_index" not in st.session_state: st.session_state.match_index = 0
 if "game_mode" not in st.session_state: st.session_state.game_mode = "SETUP"
 if "ai_open" not in st.session_state: st.session_state.ai_open = False
 
-# ૨ લેઆઉટ બોક્સ (ડાબી બાજુ લોબી, જમણી બાજુ તમે બનાવેલું રેડ બોક્સ સેટિંગ)
-col_game, col_ai = st.columns([1.4, 1])
+# ⚡ મિશન સ્લિમ લેઆઉટ: ડાબી બાજુ રમતની લોબી, જમણી બાજુ સાઇડમાં નાનો રોબોટ આઇકોન બટન
+col_main_game, col_robot_btn = st.columns([4, 1])
 
-with col_ai:
-    # 🎯 તમારા બનાવેલા લાલ બોક્સની જગ્યાએ ચાણક્યજીનો નાનો મસ્ત ફોટો ગોઠવ્યો છે
-    st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
-    # ઇન્ટરનેટ પરથી પ્રોપર ચાણક્ય ઇલસ્ટ્રેશન લિંક લોડ કરી છે
-    st.image("https://raw.githubusercontent.com/aayushbaraiya0/BEST-GAME-FOR-REVISION-AND-TEST/main/chanakya.png", width=140, output_format="PNG")
-    st.markdown("</div>", unsafe_allow_html=True)
-    
-    # ફોટો અથવા બટન બંને ટચ કરવાથી બોટ ઓપન થશે
-    if st.button("🧠 ચાણક્ય AI ખોલો / બંધ કરો", key="chanakya_btn"):
+with col_robot_btn:
+    # 🤖 ઓરેન્જ રોબોટ બટન જે જમણી બાજુએ સેટ થઈ ગયું છે
+    if st.button("🤖 ચાણક્ય AI"):
         st.session_state.ai_open = not st.session_state.ai_open
         st.rerun()
-        
-    if st.session_state.ai_open:
-        st.markdown("<div class='ai-popup-box'>", unsafe_allow_html=True)
-        st.subheader("🧠 ચાણક્ય AI")
-        if "study_chat_history" not in st.session_state: st.session_state.study_chat_history = []
-        if not st.session_state.study_chat_history:
-            st.session_state.study_chat_history.append({"role": "assistant", "message": f"પ્રણામ {st.session_state.player_name} ભાઈ! હું ચાણક્ય AI છું. ભણવાનો કોઈ પણ પ્રશ્ન અહીં પૂછો!"})
-        for chat in st.session_state.study_chat_history:
-            with st.chat_message(chat["role"]): st.write(chat["message"])
-        if study_msg := st.chat_input("અહીં સવાલ પૂછો..."):
-            st.session_state.study_chat_history.append({"role": "user", "message": study_msg})
-            reply = f"ખૂબ જ સરસ સવાલ {st.session_state.player_name} ભાઈ! હું તમને આ આખો ટોપિક સહેલાઈથી સમજાવી દઈશ."
-            st.session_state.study_chat_history.append({"role": "assistant", "message": reply})
-            st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
 
-with col_game:
+with col_main_game:
     if st.session_state.game_mode == "SETUP":
-        st.header("⚙️ ગેમ સેટઅપ લોબી")
+        st.subheader("⚙️ ગેમ સેટઅપ લોબી")
         name_input = st.text_input("✍️ તમારું નામ લખો:", value=st.session_state.player_name)
         if name_input: st.session_state.player_name = name_input.strip()
             
@@ -200,7 +178,7 @@ with col_game:
             st.rerun()
 
     elif st.session_state.game_mode == "PLAYING":
-        st.header(f"🕹️ બેટલ ગ્રાઉન્ડ - {st.session_state.player_name}")
+        st.subheader(f"🕹️ બેટલ ગ્રાઉન્ડ - {st.session_state.player_name}")
         
         if st.session_state.score <= 0:
             st.error(f"💥 GAME OVER {st.session_state.player_name}! તમારા પોઈન્ટ્સ 0 થઈ ગયા.")
@@ -215,7 +193,7 @@ with col_game:
             total_q = len(st.session_state.current_match_questions)
             if idx < total_q:
                 current_q = st.session_state.current_match_questions[idx]
-                st.markdown(f"#### 🎯 સ્કોર: <span style='color:#00ffff'>{st.session_state.score}</span>", unsafe_allow_html=True)
+                st.markdown(f"#### 🎯 સ્કોર: <span style='color:#00ffff'>{st.session_state.score}</span>")
                 st.write(f"📊 પ્રશ્ન પ્રોગ્રેસ: **{idx + 1} / {total_q}**")
                 st.subheader(current_q["question"])
                 
@@ -234,3 +212,19 @@ with col_game:
                 if st.button("🏁 નવો રેકોર્ડ સેટ કરો", key="reset_match_btn"):
                     st.session_state.game_mode = "SETUP"
                     st.rerun()
+
+# 🧠 --- ચાણક્ય AI બોક્સ પોપઅપ લોજિક ---
+if st.session_state.ai_open:
+    st.markdown("<div class='ai-popup-box'>", unsafe_allow_html=True)
+    st.subheader("🧠 ચાણક્ય AI")
+    if "study_chat_history" not in st.session_state: st.session_state.study_chat_history = []
+    if not st.session_state.study_chat_history:
+        st.session_state.study_chat_history.append({"role": "assistant", "message": f"પ્રણામ {st.session_state.player_name} ભાઈ! હું ચાણક્ય AI છું. શિક્ષણ કે રિવિઝનનો કોઈ પણ મૂંઝવતો પ્રશ્ન અહીં પૂછઓ!"})
+    for chat in st.session_state.study_chat_history:
+        with st.chat_message(chat["role"]): st.write(chat["message"])
+    if study_msg := st.chat_input("અહીં સવાલ પૂછો..."):
+        st.session_state.study_chat_history.append({"role": "user", "message": study_msg})
+        reply = f"ખૂબ જ સરસ સવાલ {st.session_state.player_name} ભાઈ! હું આ આખા વિષયને પાકો કરવામાં તમારી પૂરી મદદ કરીશ."
+        st.session_state.study_chat_history.append({"role": "assistant", "message": reply})
+        st.rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
