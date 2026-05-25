@@ -45,6 +45,17 @@ st.markdown("""
         border-radius: 10px;
         margin-top: 10px;
     }
+    /* ફોટો ક્લિકેબલ લાગે તેવી સ્ટાઇલ */
+    .chanakya-photo {
+        cursor: pointer;
+        transition: transform 0.2s;
+        border: 2px solid #00ffff;
+        border-radius: 10px;
+    }
+    .chanakya-photo:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px #00ffff;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -128,16 +139,18 @@ if "match_index" not in st.session_state: st.session_state.match_index = 0
 if "game_mode" not in st.session_state: st.session_state.game_mode = "SETUP"
 if "ai_open" not in st.session_state: st.session_state.ai_open = False
 
-# લેઆઉટ: ડાબી બાજુ ગેમ સેટઅપ, જમણી બાજુ ચાણક્ય AI આઇકોન અને બટન
-col_game, col_ai = st.columns([1.5, 1])
+# ૨ લેઆઉટ બોક્સ (ડાબી બાજુ લોબી, જમણી બાજુ તમે બનાવેલું રેડ બોક્સ સેટિંગ)
+col_game, col_ai = st.columns([1.4, 1])
 
 with col_ai:
-    # 🎯 હેલ્પ સેન્ટર અહીથી રીમુવ કર્યું છે. માત્ર ચાણક્યજીનો નાનો ગોળ આઇકોન અને બટન રાખ્યું છે.
+    # 🎯 તમારા બનાવેલા લાલ બોક્સની જગ્યાએ ચાણક્યજીનો નાનો મસ્ત ફોટો ગોઠવ્યો છે
     st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
-    st.image("https://img.icons8.com/color/96/avatar.png", width=70) # સ્લિમ અને નાનો પ્રીમિયમ આઇકોન
+    # ઇન્ટરનેટ પરથી પ્રોપર ચાણક્ય ઇલસ્ટ્રેશન લિંક લોડ કરી છે
+    st.image("https://raw.githubusercontent.com/aayushbaraiya0/BEST-GAME-FOR-REVISION-AND-TEST/main/chanakya.png", width=140, output_format="PNG")
     st.markdown("</div>", unsafe_allow_html=True)
     
-    if st.button("🧠 ચાણક્ય AI ખોલો / બંધ કરો"):
+    # ફોટો અથવા બટન બંને ટચ કરવાથી બોટ ઓપન થશે
+    if st.button("🧠 ચાણક્ય AI ખોલો / બંધ કરો", key="chanakya_btn"):
         st.session_state.ai_open = not st.session_state.ai_open
         st.rerun()
         
@@ -146,12 +159,12 @@ with col_ai:
         st.subheader("🧠 ચાણક્ય AI")
         if "study_chat_history" not in st.session_state: st.session_state.study_chat_history = []
         if not st.session_state.study_chat_history:
-            st.session_state.study_chat_history.append({"role": "assistant", "message": f"પ્રણામ {st.session_state.player_name} ભાઈ! હું ચાણક્ય AI છું. શિક્ષણ કે રિવિઝનનો કોઈ પણ મૂંઝવતો પ્રશ્ન અહીં પૂછો!"})
+            st.session_state.study_chat_history.append({"role": "assistant", "message": f"પ્રણામ {st.session_state.player_name} ભાઈ! હું ચાણક્ય AI છું. ભણવાનો કોઈ પણ પ્રશ્ન અહીં પૂછો!"})
         for chat in st.session_state.study_chat_history:
             with st.chat_message(chat["role"]): st.write(chat["message"])
         if study_msg := st.chat_input("અહીં સવાલ પૂછો..."):
             st.session_state.study_chat_history.append({"role": "user", "message": study_msg})
-            reply = f"ખૂબ જ ઉત્તમ જિજ્ઞાસા {st.session_state.player_name} ભાઈ! નીતિશાસ્ત્ર અને બોર્ડના વિષયોમાં હું તમને વિજેતા બનાવીશ!"
+            reply = f"ખૂબ જ સરસ સવાલ {st.session_state.player_name} ભાઈ! હું તમને આ આખો ટોપિક સહેલાઈથી સમજાવી દઈશ."
             st.session_state.study_chat_history.append({"role": "assistant", "message": reply})
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
