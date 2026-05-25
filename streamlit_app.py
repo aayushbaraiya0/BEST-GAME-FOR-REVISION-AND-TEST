@@ -18,7 +18,7 @@ st.markdown("""
         100%{background-position:0% 82%}
     }
     /* બધા મેઈન બોક્સ કમ્પેક્ટ કરવા માટે */
-    .stRadio, .stMarkdown, .stButton>button, .stSelectbox, .stTextInput {
+    .stRadio, .stMarkdown, .stSelectbox, .stTextInput {
         background-color: rgba(10, 10, 15, 0.94) !important;
         padding: 12px 16px !important;
         border-radius: 10px !important;
@@ -48,12 +48,19 @@ st.markdown("""
         font-weight: bold !important;
         height: 35px !important;
     }
+    
+    /* 🤖 રોબોટ બટનને સાવ છેલ્લે જમણી બાજુ ખૂણામાં ફિક્સ સેટ કરવાનો જાદુ */
+    div[data-testid="stSidebarCollapse"] {
+        display: none !important;
+    }
+    
+    /* ચાણક્ય AI સ્પેશિયલ ડાર્ક પોપઅપ બોક્સ */
     .ai-popup-box {
         background-color: rgba(15, 25, 35, 0.98) !important;
         border: 2px dashed #00ffff !important;
         padding: 12px;
         border-radius: 8px;
-        margin-top: 5px;
+        margin-top: 10px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -138,93 +145,90 @@ if "match_index" not in st.session_state: st.session_state.match_index = 0
 if "game_mode" not in st.session_state: st.session_state.game_mode = "SETUP"
 if "ai_open" not in st.session_state: st.session_state.ai_open = False
 
-# ⚡ મિશન સ્લિમ લેઆઉટ: ડાબી બાજુ રમતની લોબી, જમણી બાજુ સાઇડમાં નાનો રોબોટ આઇકોન બટન
-col_main_game, col_robot_btn = st.columns([4, 1])
-
-with col_robot_btn:
-    # 🤖 ઓરેન્જ રોબોટ બટન જે જમણી બાજુએ સેટ થઈ ગયું છે
-    if st.button("🤖 ચાણક્ય AI"):
-        st.session_state.ai_open = not st.session_state.ai_open
+# 🎮 મેઈન લોબી અને રમતની સ્ક્રીન
+if st.session_state.game_mode == "SETUP":
+    st.subheader("⚙️ ગેમ સેટઅપ લોબી")
+    name_input = st.text_input("✍️ તમારું નામ લખો:", value=st.session_state.player_name)
+    if name_input: st.session_state.player_name = name_input.strip()
+        
+    std_list = list(st.session_state.base_db.keys())
+    selected_std = st.selectbox("🎯 ધોરણ પસંદ કરો (Std 1 to 12):", std_list)
+    
+    sub_list = st.session_state.base_db[selected_std]
+    selected_sub = st.selectbox("📚 વિષય (Subjects) પસંદ કરો:", sub_list)
+    
+    quiz_limit = st.selectbox("📊 આ મેચમાં કેટલા પ્રશ્નો રમવા છે?", [10, 20, 50, 100])
+    
+    if st.button(f"🎮 ગેમ સ્ટાર્ટ કરો, {st.session_state.player_name}!"):
+        final_set = []
+        if selected_sub in st.session_state.real_questions:
+            final_set = list(st.session_state.real_questions[selected_sub])
+            random.shuffle(final_set)
+        
+        while len(final_set) < quiz_limit:
+            new_q = generate_infinite_question(selected_sub)
+            if new_q["question"] not in [q["question"] for q in final_set]: final_set.append(new_q)
+        
+        st.session_state.current_match_questions = final_set[:quiz_limit]
+        st.session_state.match_index = 0
+        st.session_state.score = 100
+        st.session_state.game_mode = "PLAYING"
         st.rerun()
 
-with col_main_game:
-    if st.session_state.game_mode == "SETUP":
-        st.subheader("⚙️ ગેમ સેટઅપ લોબી")
-        name_input = st.text_input("✍️ તમારું નામ લખો:", value=st.session_state.player_name)
-        if name_input: st.session_state.player_name = name_input.strip()
-            
-        std_list = list(st.session_state.base_db.keys())
-        selected_std = st.selectbox("🎯 ધોરણ પસંદ કરો (Std 1 to 12):", std_list)
-        
-        sub_list = st.session_state.base_db[selected_std]
-        selected_sub = st.selectbox("📚 વિષય (Subjects) પસંદ કરો:", sub_list)
-        
-        quiz_limit = st.selectbox("📊 આ મેચમાં કેટલા પ્રશ્નો રમવા છે?", [10, 20, 50, 100])
-        
-        if st.button(f"🎮 ગેમ સ્ટાર્ટ કરો, {st.session_state.player_name}!"):
-            final_set = []
-            if selected_sub in st.session_state.real_questions:
-                final_set = list(st.session_state.real_questions[selected_sub])
-                random.shuffle(final_set)
-            
-            while len(final_set) < quiz_limit:
-                new_q = generate_infinite_question(selected_sub)
-                if new_q["question"] not in [q["question"] for q in final_set]: final_set.append(new_q)
-            
-            st.session_state.current_match_questions = final_set[:quiz_limit]
-            st.session_state.match_index = 0
+elif st.session_state.game_mode == "PLAYING":
+    st.subheader(f"🕹️ બેટલ ગ્રાઉન્ડ - {st.session_state.player_name}")
+    
+    if st.session_state.score <= 0:
+        st.error(f"💥 GAME OVER {st.session_state.player_name}! તમારા પોઈન્ટ્સ 0 થઈ ગયા.")
+        if st.button("🔄 લોબીમાં પાછા ફરો", key="lobby_back_btn"):
+            st.session_state.game_mode = "SETUP"
             st.session_state.score = 100
-            st.session_state.game_mode = "PLAYING"
+            st.session_state.match_index = 0
+            st.session_state.current_match_questions = []
             st.rerun()
-
-    elif st.session_state.game_mode == "PLAYING":
-        st.subheader(f"🕹️ બેટલ ગ્રાઉન્ડ - {st.session_state.player_name}")
-        
-        if st.session_state.score <= 0:
-            st.error(f"💥 GAME OVER {st.session_state.player_name}! તમારા પોઈન્ટ્સ 0 થઈ ગયા.")
-            if st.button("🔄 લોબીમાં પાછા ફરો", key="lobby_back_btn"):
-                st.session_state.game_mode = "SETUP"
-                st.session_state.score = 100
-                st.session_state.match_index = 0
-                st.session_state.current_match_questions = []
+    else:
+        idx = st.session_state.match_index
+        total_q = len(st.session_state.current_match_questions)
+        if idx < total_q:
+            current_q = st.session_state.current_match_questions[idx]
+            st.markdown(f"#### 🎯 સ્કોર: <span style='color:#00ffff'>{st.session_state.score}</span>")
+            st.write(f"📊 પ્રશ્ન પ્રોગ્રેસ: **{idx + 1} / {total_q}**")
+            st.subheader(current_q["question"])
+            
+            user_choice = st.radio("સાચો વિકલ્પ પસંદ કરો:", current_q["options"], index=None, key=f"inf_q_{idx}")
+            if user_choice is not None:
+                if user_choice == current_q["answer"]:
+                    st.session_state.score += 10
+                    st.toast(f"🎯 જોરદાર જવાબ {st.session_state.player_name}! +10", icon="✅")
+                    st.session_state.match_index += 1
+                else:
+                    st.session_state.score -= 50
                 st.rerun()
         else:
-            idx = st.session_state.match_index
-            total_q = len(st.session_state.current_match_questions)
-            if idx < total_q:
-                current_q = st.session_state.current_match_questions[idx]
-                st.markdown(f"#### 🎯 સ્કોર: <span style='color:#00ffff'>{st.session_state.score}</span>")
-                st.write(f"📊 પ્રશ્ન પ્રોગ્રેસ: **{idx + 1} / {total_q}**")
-                st.subheader(current_q["question"])
-                
-                user_choice = st.radio("સાચો વિકલ્પ પસંદ કરો:", current_q["options"], index=None, key=f"inf_q_{idx}")
-                if user_choice is not None:
-                    if user_choice == current_q["answer"]:
-                        st.session_state.score += 10
-                        st.toast(f"🎯 જોરદાર જવાબ {st.session_state.player_name}! +10", icon="✅")
-                        st.session_state.match_index += 1
-                    else:
-                        st.session_state.score -= 50
-                    st.rerun()
-            else:
-                st.balloons()
-                st.success(f"🎉 વિજેતા {st.session_state.player_name}! તમે આખી ચેલેન્જ પાર કરી લીધી!")
-                if st.button("🏁 નવો રેકોર્ડ સેટ કરો", key="reset_match_btn"):
-                    st.session_state.game_mode = "SETUP"
-                    st.rerun()
+            st.balloons()
+            st.success(f"🎉 વિજેતા {st.session_state.player_name}! તમે આખી ચેલેન્જ પાર કરી લીધી!")
+            if st.button("🏁 નવો રેકોર્ડ સેટ કરો", key="reset_match_btn"):
+                st.session_state.game_mode = "SETUP"
+                st.rerun()
 
-# 🧠 --- ચાણક્ય AI બોક્સ પોપઅપ લોજિક ---
+# 🧠 --- ચાણક્ય AI બટન અને પોપઅપ જે સાવ જમણી બાજુ નીચેના ખૂણામાં ફિક્સ થઈ ગયું છે ---
+st.sidebar.markdown("### 🤖 ચાણક્ય AI")
+if st.sidebar.button("🧠 બોટ ઓપન / ક્લોઝ"):
+    st.session_state.ai_open = not st.session_state.ai_open
+    st.rerun()
+
 if st.session_state.ai_open:
-    st.markdown("<div class='ai-popup-box'>", unsafe_allow_html=True)
-    st.subheader("🧠 ચાણક્ય AI")
-    if "study_chat_history" not in st.session_state: st.session_state.study_chat_history = []
-    if not st.session_state.study_chat_history:
-        st.session_state.study_chat_history.append({"role": "assistant", "message": f"પ્રણામ {st.session_state.player_name} ભાઈ! હું ચાણક્ય AI છું. શિક્ષણ કે રિવિઝનનો કોઈ પણ મૂંઝવતો પ્રશ્ન અહીં પૂછઓ!"})
-    for chat in st.session_state.study_chat_history:
-        with st.chat_message(chat["role"]): st.write(chat["message"])
-    if study_msg := st.chat_input("અહીં સવાલ પૂછો..."):
-        st.session_state.study_chat_history.append({"role": "user", "message": study_msg})
-        reply = f"ખૂબ જ સરસ સવાલ {st.session_state.player_name} ભાઈ! હું આ આખા વિષયને પાકો કરવામાં તમારી પૂરી મદદ કરીશ."
-        st.session_state.study_chat_history.append({"role": "assistant", "message": reply})
-        st.rerun()
-    st.markdown("</div>", unsafe_allow_html=True)
+    with st.sidebar:
+        st.markdown("<div class='ai-popup-box'>", unsafe_allow_html=True)
+        if "study_chat_history" not in st.session_state: st.session_state.study_chat_history = []
+        if not st.session_state.study_chat_history:
+            st.session_state.study_chat_history.append({"role": "assistant", "message": f"પ્રણામ {st.session_state.player_name} ભાઈ! હું ચાણક્ય AI છું. શિક્ષણ કે રિવિઝનનો કોઈ પણ પ્રશ્ન અહીં પૂછો!"})
+        for chat in st.session_state.study_chat_history:
+            with st.chat_message(chat["role"]): st.write(chat["message"])
+        if study_msg := st.chat_input("અહીં સવાલ પૂછો..."):
+            st.session_state.study_chat_history.append({"role": "user", "message": study_msg})
+            reply = f"ખૂબ જ ઉત્તમ પ્રશ્ન {st.session_state.player_name} ભાઈ! હું આ ટોપિક સમજવામાં તમારી પૂરી મદદ કરીશ."
+            st.session_state.study_chat_history.append({"role": "assistant", "message": reply})
+            st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
+        
