@@ -51,7 +51,7 @@ st.markdown("""
 # 🎮 ઓફિશિયલ ગેમ ટાઇટલ હેડર
 st.markdown("<h1>🎮 BEST GAME FOR REVISION AND TEST</h1>", unsafe_allow_html=True)
 
-# 📚 તમામ ધોરણ અને ભાષાઓ (Gujarati, English) સાથેનો માસ્ટર ડેટાબેઝ
+# 📚 તમામ ધોરણ અને ભાષાઓનો ડેટાબેઝ
 if "base_db" not in st.session_state:
     st.session_state.base_db = {
         "Std 1": ["ગણિત ગમ્મત", "ગુજરાતી (કલરવ)", "અંગ્રેજી (English)"],
@@ -68,12 +68,11 @@ if "base_db" not in st.session_state:
         "Std 12": ["ગણિત (Maths)", "ભૌતિક વિજ્ઞાન", "રસાયણ વિજ્ઞાન", "જીવ વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "એકાઉન્ટ", "સ્ટેટ્સ"]
     }
 
-# 📝 દરેક વિષય અને કસ્ટમ ભાષાઓના અસલી પ્રશ્નોનો લોડર પૂલ
 if "real_questions" not in st.session_state:
     st.session_state.real_questions = {
         "વિજ્ઞાન (Science)": [
             {"question": "મેગ્નેશિયમ પટ્ટીને હવામાં સળગાવતા પહેલાં શા માટે સાફ કરવામાં આવે છે? (PYQ)", "options": ["ભેજ દૂર કરવા", "નિષ્ક્રિય મેગ્નેશિયમ ઓક્સાઇડનું સ્તર દૂર કરવા", "ચળકાટ માટે", "કાર્બોનેટ સ્તર દૂર કરવા"], "answer": "નિષ્ક્રિય મેગ્નેશિયમ ઓક્સાઇડનું સ્તર દૂર કરવા"},
-            {"question": "કળી ચૂનાનું (Calcium Oxide) પાણી સાથે ભળવું એ કઈ પ્રક્રિયા છે? (PYQ)", "options": ["உષ્માશોષક", "ઉષ્માક્ષેપક", "વિઘટન", "દ્વિ-વિસ્થાપન"], "answer": "ઉષ્માક્ષેપક"},
+            {"question": "કળી ચૂનાનું (Calcium Oxide) પાણી સાથે ભળવું એ કઈ પ્રક્રિયા છે? (PYQ)", "options": ["ઉષ્માશોષક", "ઉષ્માક્ષેપક", "વિઘટન", "દ્વિ-વિસ્થાપન"], "answer": "ઉષ્માક્ષેપક"},
             {"question": "કોઈ દ્રાવણ લાલ લિટમસ પત્રને ભૂરું બનાવે છે, તો તેની pH કેટલી હોઈ શકે? (PYQ)", "options": ["1", "4", "5", "10"], "answer": "10"}
         ],
         "ગણિત (Maths)": [
@@ -89,7 +88,6 @@ if "real_questions" not in st.session_state:
         ]
     }
 
-# ગમે તે વિષય કે લેંગ્વેજ માટે અનંત ડાયનેમિક પ્રશ્નો બનાવવાનું સ્માર્ટ એન્જિન
 def generate_infinite_question(subject):
     if "ગુજરાતી" in subject or "Gujarati" in subject:
         words = [("સૂર્ય", "ભાનુ"), ("રાત", "નિશા"), ("આકાશ", "ગગન"), ("પાણી", "જળ")]
@@ -130,26 +128,30 @@ if "match_index" not in st.session_state: st.session_state.match_index = 0
 if "game_mode" not in st.session_state: st.session_state.game_mode = "SETUP"
 if "ai_open" not in st.session_state: st.session_state.ai_open = False
 
-# લેઆઉટ: ડાબી બાજુ આખી ગેમ, જમણી બાજુ હેલ્પ બટન
+# લેઆઉટ: ડાબી બાજુ ગેમ સેટઅપ, જમણી બાજુ ચાણક્ય AI આઇકોન અને બટન
 col_game, col_ai = st.columns([1.5, 1])
 
 with col_ai:
-    st.markdown("### 🤖 હેલ્પ સેન્ટર")
-    if st.button("🧠 સ્ટડી ગુરુ AI ખોલો / બંધ કરો"):
+    # 🎯 હેલ્પ સેન્ટર અહીથી રીમુવ કર્યું છે. માત્ર ચાણક્યજીનો નાનો ગોળ આઇકોન અને બટન રાખ્યું છે.
+    st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
+    st.image("https://img.icons8.com/color/96/avatar.png", width=70) # સ્લિમ અને નાનો પ્રીમિયમ આઇકોન
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    if st.button("🧠 ચાણક્ય AI ખોલો / બંધ કરો"):
         st.session_state.ai_open = not st.session_state.ai_open
         st.rerun()
         
     if st.session_state.ai_open:
         st.markdown("<div class='ai-popup-box'>", unsafe_allow_html=True)
-        st.subheader("🧠 સ્ટડી ગુરુ AI")
+        st.subheader("🧠 ચાણક્ય AI")
         if "study_chat_history" not in st.session_state: st.session_state.study_chat_history = []
         if not st.session_state.study_chat_history:
-            st.session_state.study_chat_history.append({"role": "assistant", "message": f"નમસ્તે {st.session_state.player_name} ભાઈ! હું તમારો પર્સનલ બોટ છું. કોઈ પણ ડાઉટ અહીં પૂછો!"})
+            st.session_state.study_chat_history.append({"role": "assistant", "message": f"પ્રણામ {st.session_state.player_name} ભાઈ! હું ચાણક્ય AI છું. શિક્ષણ કે રિવિઝનનો કોઈ પણ મૂંઝવતો પ્રશ્ન અહીં પૂછો!"})
         for chat in st.session_state.study_chat_history:
             with st.chat_message(chat["role"]): st.write(chat["message"])
         if study_msg := st.chat_input("અહીં સવાલ પૂછો..."):
             st.session_state.study_chat_history.append({"role": "user", "message": study_msg})
-            reply = f"ખૂબ સરસ સવાલ {st.session_state.player_name} ભાઈ! હું તમારી તૈયારી એકદમ બેસ્ટ કરાવી દઈશ!"
+            reply = f"ખૂબ જ ઉત્તમ જિજ્ઞાસા {st.session_state.player_name} ભાઈ! નીતિશાસ્ત્ર અને બોર્ડના વિષયોમાં હું તમને વિજેતા બનાવીશ!"
             st.session_state.study_chat_history.append({"role": "assistant", "message": reply})
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
@@ -187,11 +189,8 @@ with col_game:
     elif st.session_state.game_mode == "PLAYING":
         st.header(f"🕹️ બેટલ ગ્રાઉન્ડ - {st.session_state.player_name}")
         
-        # 🚨 લોબી બટન ફિક્સ લોજિક (ગેમ ઓવર સ્ક્રીન)
         if st.session_state.score <= 0:
             st.error(f"💥 GAME OVER {st.session_state.player_name}! તમારા પોઈન્ટ્સ 0 થઈ ગયા.")
-            
-            # બટન ક્લિક થતાં જ સ્ટેટ ફ્રેશ ક્લિયર થઈને સેટઅપ લોબી ખુલશે!
             if st.button("🔄 લોબીમાં પાછા ફરો", key="lobby_back_btn"):
                 st.session_state.game_mode = "SETUP"
                 st.session_state.score = 100
