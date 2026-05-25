@@ -33,7 +33,11 @@ st.markdown("""
         text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
         text-align: center;
     }
-    input { color: #ffffff !important; }
+    /* નામ લખવાના બોક્સમાં કાળો કલર */
+    input { 
+        color: #000000 !important; 
+        font-weight: bold !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -75,14 +79,13 @@ if "base_db" not in st.session_state:
         "Std 12 (Commerce)": {"નામાના મૂળતત્વો (Account)": {}, "આંકડાશાસ્ત્ર (Stats)": {}, "અર્થશાસ્ત્ર (Eco)": {}, "વાણિજ્ય વ્યવસ્થા (BA)": {}, "અંગ્રેજી": {}}
     }
 
-# ગમે તે વિષય માટે અનંત ડાયનેમિક પ્રશ્નો બનાવવાનું સ્માર્ટ લોજિક
 def generate_infinite_question(subject):
     if "ગણિત" in subject or "Maths" in subject or "આંકડાશાસ્ત્ર" in subject:
         a = random.randint(2, 9)
         b = random.randint(1, 12)
         ans = a * b
         return {
-            "question": f"[DYNAMIC MATH RUN] {a} ગુણ્યા {b} (અથવા તેના જેવો કન્સેપ્ટ) નો સાચો જવાબ શું થાય?",
+            "question": f"[DYNAMIC MATH RUN] {a} ગુણ્યા {b} નો સાચો જવાબ શું થાય?",
             "options": [str(ans), str(ans + random.randint(1,5)), str(ans - random.randint(1,3)), str(a + b)],
             "answer": str(ans)
         }
@@ -108,15 +111,13 @@ with col1:
         name_input = st.text_input("✍️ તમારું નામ:", value=st.session_state.player_name)
         if name_input: st.session_state.player_name = name_input.strip()
             
-        # 🎯 ૧ થી ૧૨ ધોરણનું સિલેક્શન
+        # 🎯 ૧ થી ૧૨ ધોરણનું ફિક્સ ડ્રોપડાઉન લિસ્ટ
         std_list = list(st.session_state.base_db.keys())
         selected_std = st.selectbox("🎯 ધોરણ પસંદ કરો (Std 1 to 12):", std_list)
         
-        # 📚 પસંદ કરેલા ધોરણ મુજબ જ વિષયો લોડ થશે!
         sub_list = list(st.session_state.base_db[selected_std].keys())
         selected_sub = st.selectbox("📚 વિષય (Subjects) પસંદ કરો:", sub_list)
         
-        # પ્રકરણ લોડ કરવાનું સ્માર્ટ લોજિક
         ch_list = ["પ્રકરણ ૧: રિવિઝન મેગા લૂપ"]
         if st.session_state.base_db[selected_std][selected_sub]:
             ch_list = list(st.session_state.base_db[selected_std][selected_sub].keys())
@@ -125,7 +126,6 @@ with col1:
         quiz_limit = st.selectbox("📊 આ મેચમાં કેટલા પ્રશ્નો રમવા છે?", [10, 20, 50, 100])
         
         if st.button(f"🎮 ગેમ સ્ટાર્ટ કરો, {st.session_state.player_name}!"):
-            # બેઝ પ્રશ્નો મેળવવા
             raw_q = []
             if selected_ch in st.session_state.base_db[selected_std][selected_sub]:
                 raw_q = list(st.session_state.base_db[selected_std][selected_sub][selected_ch])
@@ -135,7 +135,6 @@ with col1:
             for q in raw_q:
                 if len(final_set) < quiz_limit: final_set.append(q)
             
-            # બાકીના ઇન્ફિનાઇટ પ્રશ્નો ઓટોમેટિક જનરેટ થશે, ગેમ ક્યારેય અટકશે જ નહીં!
             while len(final_set) < quiz_limit:
                 new_q = generate_infinite_question(selected_sub)
                 if new_q["question"] not in [q["question"] for q in final_set]: final_set.append(new_q)
@@ -187,7 +186,7 @@ with col2:
     if study_msg := st.chat_input("અહીં સવાલ પૂછો..."):
         st.session_state.study_chat_history.append({"role": "user", "message": study_msg})
         with st.chat_message("user"): st.write(study_msg)
-        study_reply = f"ખૂબ સરસ સવાલ {st.session_state.player_name}! આ કસ્ટમ ઓટો-લોડ ગેમ દરેક ધોરણના વિદ્યાર્થીને ક્રોમમાં મજા કરાવી દેશે!"
+        study_reply = f"ખૂબ સરસ સવાલ {st.session_state.player_name}! આ કાયમી ગેમ તમારા બોર્ડની ધમાકેદાર તૈયારી કરાવી દેશે!"
         st.session_state.study_chat_history.append({"role": "assistant", "message": study_reply})
         with st.chat_message("assistant"): st.write(study_reply)
         st.rerun()
