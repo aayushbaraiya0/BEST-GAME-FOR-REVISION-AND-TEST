@@ -40,7 +40,7 @@ div.stButton > button { background-color: #333333 !important; color: white !impo
 # ================= 🕹️ ગેમ લોજિક =================
 st.title("🎮 BEST GAME FOR REVISION")
 
-name = st.text_input("✍️ તમારું નામ:", "આયુષ")
+name = st.text_input("✍️ તમારું નામ:", "")
 std = st.selectbox("🎯 ધોરણ:", list(ncert_master.keys()))
 sub = st.selectbox("📚 વિષય:", list(ncert_master[std].keys()))
 ch = st.selectbox("📖 પ્રકરણ:", ncert_master[std][sub])
