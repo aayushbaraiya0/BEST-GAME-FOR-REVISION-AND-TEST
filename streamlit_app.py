@@ -137,7 +137,7 @@ st.markdown("<div class='main-title'>🎮 BEST GAME FOR REVISION AND TEST</div>"
 # 🚀 નવું ટેબ ઓપન કરવા માટેનું બટન
 st.markdown('<a href="./" target="_blank" class="new-tab-btn">🚀 START GAME IN NEW TAB</a>', unsafe_allow_html=True)
 
-# ================= 📚 સંપૂર્ણ NCERT ડેટાબેઝ (ધોરણ ૧ થી ૧૨ ના તમામ વિષયો અને બધા પ્રકરણો) =================
+# ================= 📚 સંપૂર્ણ NCERT ડેટાબેઝ =================
 if "ncert_master_db" not in st.session_state:
     st.session_state.ncert_master_db = {
         "ધોરણ ૧૦ (Std 10)": {
@@ -192,7 +192,7 @@ if "ncert_master_db" not in st.session_state:
             ]
         },
         "ધોરણ ૮ (Std 8)": {
-            "વિજ્ઞાન (Science)": ["Ch 1: પાક ઉત્પાદન અને વ્યવસ્થાપન", "Ch 2: સૂક્ષ્મજીવો: મિત્ર અને શત્રુ", "Ch 3: કોલસો અને પેટ્રોલિયમ", "Ch 4: દહન અને જ્યોત", "Ch 9: બળ અને દબાણ", "Ch 10: ઘર્ષણ", "Ch 11: ધ્વનિ"],
+            "વિજ્ઞાન (Science)": ["Ch 1: પાક ઉત્પાદન અને વ્યવстемаપન", "Ch 2: સૂક્ષ્મજીવો: મિત્ર અને શત્રુ", "Ch 3: કોલસો અને પેટ્રોલિયમ", "Ch 4: દહન અને જ્યોત", "Ch 9: બળ અને દબાણ", "Ch 10: ઘર્ષણ", "Ch 11: ધ્વનિ"],
             "ગણિત (Maths)": ["Ch 1: સંમેય સંખ્યાઓ", "Ch 2: એકચલ રેખીય સમીકરણો", "Ch 3: ચતુષ્કોણની સમજ", "Ch 5: વર્ગ અને વર્ગમૂળ", "Ch 6: ઘન અને ઘનમૂળ", "Ch 9: ક્ષેત્રમિતિ"]
         },
         "ધોરણ ૭ (Std 7)": {
@@ -238,7 +238,7 @@ quiz_questions = {
     ]
 }
 
-# 🚀 ઓલ-ઇન-વન NCERT ડાયનેમિક ઓટો-ક્વેશ્ચન જનરેટર (દરેક ધોરણ અને ચેપ્ટર માટે બોર્ડ લેવલના પ્રશ્નો બનાવશે)
+# 🚀 ઓલ-ઇન-વન NCERT ડાયનેમિક ઓટો-ક્વેશ્ચન જનરેટર
 def generate_dynamic_question(ch_name):
     if "ગણિત" in ch_name or "સંખ્યાઓ" in ch_name or "બહુપદીઓ" in ch_name or "સમીકરણ" in ch_name or "ત્રિકોણ" in ch_name:
         a = random.randint(3, 9)
@@ -274,7 +274,8 @@ sub_data = st.session_state.ncert_master_db[ધોરણ]
 sub_list = list(sub_data.keys()) if isinstance(sub_data, dict) else ["સામાન્ય જ્ઞાન"]
 વિષય = st.selectbox("📚 વિષય (Subjects) પસંદ કરો:", sub_list)
 
-ch_list = sub_data[विષય] if isinstance(sub_data, dict) and વિષય in sub_data else [f"Ch 1: ઓલ-ઈન-વન મેગા લૂપ"]
+# 🚨 અહીં હિન્દી અક્ષર સુધારીને પ્યોર ગુજરાતી 'વિષય' સેટ કરી દીધો છે!
+ch_list = sub_data[વિષય] if isinstance(sub_data, dict) and વિષય in sub_data else [f"Ch 1: ઓલ-ઈન-વન મેગા લૂપ"]
 પ્રકરણ = st.selectbox("📖 પ્રકરણ (Chapters) પસંદ કરો:", ch_list)
 
 st.markdown("</div>", unsafe_allow_html=True)
