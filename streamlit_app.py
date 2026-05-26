@@ -48,6 +48,19 @@ st.markdown("""
         font-weight: bold !important;
         height: 35px !important;
     }
+    /* 🤖 ચાણક્ય AI બટનને સુંદર કસ્ટમ લુક આપવા માટે */
+    .stButton>button {
+        background-color: #121216 !important;
+        color: #00ffff !important;
+        border: 1px solid #00ffff !important;
+        font-weight: bold !important;
+        transition: 0.3s;
+    }
+    .stButton>button:hover {
+        background-color: #00ffff !important;
+        color: #000000 !important;
+        box-shadow: 0 0 15px #00ffff;
+    }
     /* ચાણક્ય AI સ્પેશિયલ ડાર્ક પોપઅપ બોક્સ */
     .ai-popup-box {
         background-color: rgba(15, 25, 35, 0.98) !important;
@@ -75,14 +88,14 @@ if "base_db" not in st.session_state:
         "Std 8": ["ગણિત (Maths)", "વિજ્ઞાન (Science)", "સામાજિક વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "हिन्दी", "સંસ્કૃત"],
         "Std 9": ["ગણિત (Maths)", "વિજ્ઞાન (Science)", "સામાજિક વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "हिन्दी", "સંસ્કૃત"],
         "Std 10": ["વિજ્ઞાન (Science)", "ગણિત (Maths)", "સામાજિક વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "हिन्दी", "સંસ્કૃત"],
-        "Std 11": ["ગણિત (Maths)", "ભૌતિક વિજ્ઞાન", "રસાયણ વિજ્ઞાન", "જીવ વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "એકાઉન્ટ", "સ્ટેટ્સ"],
-        "Std 12": ["ગણિત (Maths)", "ભૌતિક વિજ્ઞાન", "રસાયણ વિજ્ઞાન", "જીવ વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "એકાઉન્ટ", "સ્ટેટ્સ"]
+        "Std 11": ["ગણિત (Maths)", "ભૌતિક વિજ્ઞાન", "রসાયણ વિજ્ઞાન", "જીવ વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "એકાઉન્ટ", "સ્ટેટ્સ"],
+        "Std 12": ["ગણિત (Maths)", "ભૌતિક વિજ્ઞાન", "রসાયણ વિજ્ઞાન", "જીવ વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "એકાઉન્ટ", "સ્ટેટ્સ"]
     }
 
 if "real_questions" not in st.session_state:
     st.session_state.real_questions = {
         "વિજ્ઞાન (Science)": [
-            {"question": "મેગ્નેશિયમ પટ્ટીને હવામાં સળગાવતા પહેલાં શા માટે સાફ કરવામાં આવે છે? (PYQ)", "options": ["ભેજ દૂર કરવા", "નિષ્ક્રિય મેગ્નેશિયમ ઓક્સાઇડનું સ્તર દૂર કરવા", "ચળકાટ માટે", "คાર્બોનેટ સ્તર દૂર કરવા"], "answer": "નિષ્ક્રિય મેગ્નેશિયમ ઓક્સાઇડનું સ્તર દૂર કરવા"},
+            {"question": "મેગ્નેશિયમ પટ્ટીને હવામાં સળગાવતા પહેલાં શા માટે સાફ કરવામાં આવે છે? (PYQ)", "options": ["ભેજ દૂર કરવા", "નિષ્ક્રિય મેગ્નેશિયમ ઓક્સાઇડનું સ્તર દૂર કરવા", "ચળકાટ માટે", "કાર્બોનેટ સ્તર દૂર કરવા"], "answer": "નિષ્ક્રિય મેગ્નેશિયમ ઓક્સાઇડનું સ્તર દૂર કરવા"},
             {"question": "કળી ચૂનાનું (Calcium Oxide) પાણી સાથે ભળવું એ કઈ પ્રક્રિયા છે? (PYQ)", "options": ["ઉષ્માશોષક", "ઉષ્માક્ષેપક", "વિઘટન", "દ્વિ-વિસ્થાપન"], "answer": "ઉષ્માક્ષેપક"},
             {"question": "કોઈ દ્રાવણ લાલ લિટમસ પત્રને ભૂરું બનાવે છે, તો તેની pH કેટલી હોઈ શકે? (PYQ)", "options": ["1", "4", "5", "10"], "answer": "10"}
         ],
@@ -131,7 +144,7 @@ def generate_infinite_question(subject):
             "answer": "સાચો વિકલ્પ"
         }
 
-# સેશન સ્ટેટ્સ સેટઅપ
+# સેશન સ્ટેટ્સ
 if "player_name" not in st.session_state: st.session_state.player_name = "Jasharaj"
 if "score" not in st.session_state: st.session_state.score = 100
 if "current_match_questions" not in st.session_state: st.session_state.current_match_questions = []
@@ -139,7 +152,7 @@ if "match_index" not in st.session_state: st.session_state.match_index = 0
 if "game_mode" not in st.session_state: st.session_state.game_mode = "SETUP"
 if "ai_open" not in st.session_state: st.session_state.ai_open = False
 
-# 🕹️ મેઈન ગેમ લોબી અને કન્ટેન્ટ
+# 🕹️ મેઈન ગેમ કન્ટેન્ટ
 if st.session_state.game_mode == "SETUP":
     st.subheader("⚙️ ગેમ સેટઅપ લોબી")
     name_input = st.text_input("✍️ તમારું નામ લખો:", value=st.session_state.player_name)
@@ -205,15 +218,16 @@ elif st.session_state.game_mode == "PLAYING":
                 st.session_state.game_mode = "SETUP"
                 st.rerun()
 
-# 🧠 --- ચાણક્ય AI બટન અને પોપઅપ જે હવે સાચે જ જમણી બાજુ (Right Side) નીચે સેટ થઈ ગયું છે ---
+# 🧠 --- ચાણક્ય AI બટન અને પોપઅપ જે હવે ૧૦૦% રાઇટ સાઇડ સેટ થઈ ગયું છે ---
 st.write("---")
-col_space, col_btn = st.columns([3, 1]) # આ લાઈનથી બટન આપમેળે જમણી બાજુ સરકી જશે
+col_space, col_btn = st.columns([2.8, 1.2])
 
 with col_btn:
-    if st.button("🧠 ચાણક્ય AI ઓપન / ક્લોઝ"):
+    if st.button("🧠 ચાણક્ય AI ઓપન / ક્લોઝ", key="chanakya_fixed_btn"):
         st.session_state.ai_open = not st.session_state.ai_open
         st.rerun()
 
+# આ કન્ડિશન અંદર હોવાથી જ્યારે AI બંધ હશે ત્યારે નીચે કોઈ કાળો પટ્ટો નહીં દેખાય!
 if st.session_state.ai_open:
     st.markdown("<div class='ai-popup-box'>", unsafe_allow_html=True)
     st.subheader("🧠 ચાણક્ય AI")
@@ -224,7 +238,7 @@ if st.session_state.ai_open:
         with st.chat_message(chat["role"]): st.write(chat["message"])
     if study_msg := st.chat_input("અહીં સવાલ પૂછો..."):
         st.session_state.study_chat_history.append({"role": "user", "message": study_msg})
-        reply = f"ખૂબ જ ઉત્તમ પ્રશ્ન {st.session_state.player_name} ભાઈ! હું આ આખા વિષયને પાકો કરવામાં તમારી પૂરી મદદ કરીશ."
+        reply = f"ખૂબ જ ઉત્તમ પ્રશ્ન {st.session_state.player_name} ભાઈ! હું આ વિષયને પાકો કરવામાં તમારી પૂરી મદદ કરીશ."
         st.session_state.study_chat_history.append({"role": "assistant", "message": reply})
         st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
