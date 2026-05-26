@@ -9,8 +9,11 @@ c = conn.cursor()
 c.execute("CREATE TABLE IF NOT EXISTS scores (id INTEGER PRIMARY KEY, name TEXT, score INTEGER, standard TEXT, subject TEXT, chapter TEXT)")
 conn.commit()
 
-# ================= 📚 સંપૂર્ણ વિષય અને પ્રકરણ ડેટા =================
-# બધા જ વિષયો અને તેના ચોક્કસ પ્રકરણો અહીં છે
+# ================= 🌈 ડિઝાઈન =================
+st.set_page_config(page_title="રિવિઝન ક્વિઝ", layout="centered")
+st.markdown("""<style>.stApp { background: #1a1a1a; color: white; }</style>""", unsafe_allow_html=True)
+
+# ================= 📚 ડેટા સ્ટ્રક્ચર =================
 data_structure = {
     "ધોરણ ૧૦": {
         "સામાજિક વિજ્ઞાન": [f"પ્રકરણ {i}" for i in range(1, 22)],
@@ -21,25 +24,24 @@ data_structure = {
     }
 }
 
-# ================= 🤖 પ્રશ્ન એન્જિન (વિષય અને પ્રકરણ સાથે) =================
-def get_q(ch, sub):
-    # અહીં દરેક વિષય માટેના પ્રશ્નોનું પૂલ છે
+# ================= 🤖 પ્રશ્ન એન્જિન =================
+def get_dynamic_question(ch, sub):
+    # દરેક વિષય માટેના પ્રશ્નો
     questions = {
         "વિજ્ઞાન": [
-            {"પ્રશ્ન": f"{ch} માંથી: એસિડ સ્વાદે કેવા હોય છે?", "વિકલ્પો": ["ખાટા", "તૂરા", "કડવા", "મીઠા"], "સાચો": "ખાટા"},
-            {"પ્રશ્ન": f"{ch} માંથી: ભૂરા લિટમસ પત્રને લાલ કોણ બનાવે છે?", "વિકલ્પો": ["એસિડ", "બેઇઝ", "ક્ષાર", "પાણી"], "સાચો": "એસિડ"}
+            {"પ્રશ્ન": "એસિડ સ્વાદે કેવા હોય છે?", "વિકલ્પો": ["ખાટા", "તૂરા", "કડવા", "મીઠા"], "સાચો": "ખાટા"},
+            {"પ્રશ્ન": "પાણીનું રાસાયણિક સૂત્ર શું છે?", "વિકલ્પો": ["H2O", "CO2", "NaCl", "O2"], "સાચો": "H2O"}
         ],
         "સામાજિક વિજ્ઞાન": [
-            {"પ્રશ્ન": f"{ch} માંથી: તાજમહાલ કોણે બંધાવ્યો?", "વિકલ્પો": ["અકબર", "શાહજહાં", "બાબર", "હુમાયુ"], "સાચો": "શાહજહાં"},
-            {"પ્રશ્ન": f"{ch} માંથી: ભારતનો કયો પાક ખરીફ પાક છે?", "વિકલ્પો": ["ડાંગર", "ઘઉં", "ચણા", "રાઈ"], "સાચો": "ડાંગર"}
+            {"પ્રશ્ન": "તાજમહાલ કોણે બંધાવ્યો?", "વિકલ્પો": ["અકબર", "શાહજહાં", "બાબર", "હુમાયુ"], "સાચો": "શાહજહાં"},
+            {"પ્રશ્ન": "લોથલ કયા જિલ્લામાં છે?", "વિકલ્પો": ["અમદાવાદ", "રાજકોટ", "ભાવનગર", "સુરત"], "સાચો": "અમદાવાદ"}
         ],
         "ગણિત": [
-            {"પ્રશ્ન": f"{ch} માંથી: વર્તુળનો પરિઘ શોધવાનું સૂત્ર?", "વિકલ્પો": ["2πr", "πr²", "2r", "πd"], "સાચો": "2πr"},
-            {"પ્રશ્ન": f"{ch} માંથી: પાયથાગોરસ પ્રમેય કયા ત્રિકોણ માટે છે?", "વિકલ્પો": ["કાટકોણ", "લઘુકોણ", "ગુરુકોણ", "સમબાજુ"], "સાચો": "કાટકોણ"}
+            {"પ્રશ્ન": "વર્તુળનો પરિઘ શોધવાનું સૂત્ર?", "વિકલ્પો": ["2πr", "πr²", "2r", "πd"], "સાચો": "2πr"}
         ]
     }
     
-    # વિષય મુજબ પ્રશ્નો મેળવો, જો ન મળે તો ડિફોલ્ટ પ્રશ્ન આપો
+    # વિષય મુજબ પ્રશ્ન પસંદ કરો
     sub_key = next((k for k in questions.keys() if k in sub), "વિજ્ઞાન")
     return random.choice(questions[sub_key])
 
@@ -49,25 +51,23 @@ st.title("🎮 રિવિઝન ટેસ્ટ")
 std = st.selectbox("ધોરણ પસંદ કરો:", list(data_structure.keys()))
 sub = st.selectbox("વિષય પસંદ કરો:", list(data_structure[std].keys()))
 ch = st.selectbox("પ્રકરણ પસંદ કરો:", data_structure[std][sub])
-quiz_limit = st.selectbox("કેટલા પ્રશ્નો?", [10, 20])
 
-if "q_idx" not in st.session_state: st.session_state.q_idx = 1
 if "score" not in st.session_state: st.session_state.score = 0
+if "q_num" not in st.session_state: st.session_state.q_num = 1
 
-q = get_dynamic_question(ch, sub, st.session_state.q_idx)
-st.write(f"### {q['પ્રશ્ન']}")
+q = get_dynamic_question(ch, sub, st.session_state.q_num)
 
-# 🚨 સાચો સ્પેલિંગ 'વિકલ્પો' વાપર્યો છે
-ans = st.radio("વિકલ્પો:", q["વિકલ્પો"], key=f"r_{st.session_state.q_idx}")
+st.write(f"### પ્રશ્ન {st.session_state.q_num}: {q['પ્રશ્ન']}")
+ans = st.radio("વિકલ્પો:", q["વિકલ્પો"], key=f"r_{st.session_state.q_num}")
 
 if st.button("સબમિટ કરો"):
     if ans == q["સાચો"]:
-        st.success("સાચો જવાબ! +10")
+        st.success("સાચો જવાબ! 🎉")
         st.session_state.score += 10
     else:
-        st.error(f"ખોટો જવાબ! સાચો: {q['સાચો']}")
+        st.error(f"ખોટો! સાચો જવાબ {q['સાચો']} છે.")
         st.session_state.score -= 5
-    st.session_state.q_idx += 1
+    st.session_state.q_num += 1
     st.rerun()
 
-st.write(f"### સ્કોર: {st.session_state.score}")
+st.write(f"### તમારો સ્કોર: {st.session_state.score}")
