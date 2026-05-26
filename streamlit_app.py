@@ -48,12 +48,6 @@ st.markdown("""
         font-weight: bold !important;
         height: 35px !important;
     }
-    
-    /* 🤖 રોબોટ બટનને સાવ છેલ્લે જમણી બાજુ ખૂણામાં ફિક્સ સેટ કરવાનો જાદુ */
-    div[data-testid="stSidebarCollapse"] {
-        display: none !important;
-    }
-    
     /* ચાણક્ય AI સ્પેશિયલ ડાર્ક પોપઅપ બોક્સ */
     .ai-popup-box {
         background-color: rgba(15, 25, 35, 0.98) !important;
@@ -88,7 +82,7 @@ if "base_db" not in st.session_state:
 if "real_questions" not in st.session_state:
     st.session_state.real_questions = {
         "વિજ્ઞાન (Science)": [
-            {"question": "મેગ્નેશિયમ પટ્ટીને હવામાં સળગાવતા પહેલાં શા માટે સાફ કરવામાં આવે છે? (PYQ)", "options": ["ભેજ દૂર કરવા", "નિષ્ક્રિય મેગ્નેશિયમ ઓક્સાઇડનું સ્તર દૂર કરવા", "ચળકાટ માટે", "કાર્બોનેટ સ્તર દૂર કરવા"], "answer": "નિષ્ક્રિય મેગ્નેશિયમ ઓક્સાઇડનું સ્તર દૂર કરવા"},
+            {"question": "મેગ્નેશિયમ પટ્ટીને હવામાં સળગાવતા પહેલાં શા માટે સાફ કરવામાં આવે છે? (PYQ)", "options": ["ભેજ દૂર કરવા", "નિષ્ક્રિય મેગ્નેશિયમ ઓક્સાઇડનું સ્તર દૂર કરવા", "ચળકાટ માટે", "คાર્બોનેટ સ્તર દૂર કરવા"], "answer": "નિષ્ક્રિય મેગ્નેશિયમ ઓક્સાઇડનું સ્તર દૂર કરવા"},
             {"question": "કળી ચૂનાનું (Calcium Oxide) પાણી સાથે ભળવું એ કઈ પ્રક્રિયા છે? (PYQ)", "options": ["ઉષ્માશોષક", "ઉષ્માક્ષેપક", "વિઘટન", "દ્વિ-વિસ્થાપન"], "answer": "ઉષ્માક્ષેપક"},
             {"question": "કોઈ દ્રાવણ લાલ લિટમસ પત્રને ભૂરું બનાવે છે, તો તેની pH કેટલી હોઈ શકે? (PYQ)", "options": ["1", "4", "5", "10"], "answer": "10"}
         ],
@@ -145,7 +139,7 @@ if "match_index" not in st.session_state: st.session_state.match_index = 0
 if "game_mode" not in st.session_state: st.session_state.game_mode = "SETUP"
 if "ai_open" not in st.session_state: st.session_state.ai_open = False
 
-# 🎮 મેઈન લોબી અને રમતની સ્ક્રીન
+# 🕹️ મેઈન ગેમ લોબી અને કન્ટેન્ટ
 if st.session_state.game_mode == "SETUP":
     st.subheader("⚙️ ગેમ સેટઅપ લોબી")
     name_input = st.text_input("✍️ તમારું નામ લખો:", value=st.session_state.player_name)
@@ -211,24 +205,26 @@ elif st.session_state.game_mode == "PLAYING":
                 st.session_state.game_mode = "SETUP"
                 st.rerun()
 
-# 🧠 --- ચાણક્ય AI બટન અને પોપઅપ જે સાવ જમણી બાજુ નીચેના ખૂણામાં ફિક્સ થઈ ગયું છે ---
-st.sidebar.markdown("### 🤖 ચાણક્ય AI")
-if st.sidebar.button("🧠 બોટ ઓપન / ક્લોઝ"):
-    st.session_state.ai_open = not st.session_state.ai_open
-    st.rerun()
+# 🧠 --- ચાણક્ય AI બટન અને પોપઅપ જે હવે સાચે જ જમણી બાજુ (Right Side) નીચે સેટ થઈ ગયું છે ---
+st.write("---")
+col_space, col_btn = st.columns([3, 1]) # આ લાઈનથી બટન આપમેળે જમણી બાજુ સરકી જશે
+
+with col_btn:
+    if st.button("🧠 ચાણક્ય AI ઓપન / ક્લોઝ"):
+        st.session_state.ai_open = not st.session_state.ai_open
+        st.rerun()
 
 if st.session_state.ai_open:
-    with st.sidebar:
-        st.markdown("<div class='ai-popup-box'>", unsafe_allow_html=True)
-        if "study_chat_history" not in st.session_state: st.session_state.study_chat_history = []
-        if not st.session_state.study_chat_history:
-            st.session_state.study_chat_history.append({"role": "assistant", "message": f"પ્રણામ {st.session_state.player_name} ભાઈ! હું ચાણક્ય AI છું. શિક્ષણ કે રિવિઝનનો કોઈ પણ પ્રશ્ન અહીં પૂછો!"})
-        for chat in st.session_state.study_chat_history:
-            with st.chat_message(chat["role"]): st.write(chat["message"])
-        if study_msg := st.chat_input("અહીં સવાલ પૂછો..."):
-            st.session_state.study_chat_history.append({"role": "user", "message": study_msg})
-            reply = f"ખૂબ જ ઉત્તમ પ્રશ્ન {st.session_state.player_name} ભાઈ! હું આ ટોપિક સમજવામાં તમારી પૂરી મદદ કરીશ."
-            st.session_state.study_chat_history.append({"role": "assistant", "message": reply})
-            st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
-        
+    st.markdown("<div class='ai-popup-box'>", unsafe_allow_html=True)
+    st.subheader("🧠 ચાણક્ય AI")
+    if "study_chat_history" not in st.session_state: st.session_state.study_chat_history = []
+    if not st.session_state.study_chat_history:
+        st.session_state.study_chat_history.append({"role": "assistant", "message": f"પ્રણામ {st.session_state.player_name} ભાઈ! હું ચાણક્ય AI છું. ભણવાનો કોઈ પણ પ્રશ્ન અહીં પૂછો!"})
+    for chat in st.session_state.study_chat_history:
+        with st.chat_message(chat["role"]): st.write(chat["message"])
+    if study_msg := st.chat_input("અહીં સવાલ પૂછો..."):
+        st.session_state.study_chat_history.append({"role": "user", "message": study_msg})
+        reply = f"ખૂબ જ ઉત્તમ પ્રશ્ન {st.session_state.player_name} ભાઈ! હું આ આખા વિષયને પાકો કરવામાં તમારી પૂરી મદદ કરીશ."
+        st.session_state.study_chat_history.append({"role": "assistant", "message": reply})
+        st.rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
