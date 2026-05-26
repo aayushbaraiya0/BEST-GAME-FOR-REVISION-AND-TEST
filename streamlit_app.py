@@ -17,7 +17,7 @@ st.markdown("""
         50%{background-position:100% 19%}
         100%{background-position:0% 82%}
     }
-    /* બધા મેઈન બોક્સ કમ્પેક્ટ કરવા માટે */
+    /* ગેમ લોબીના બધા મુખ્ય બોક્સને સ્લિમ કરવા માટે */
     .stRadio, .stMarkdown, .stSelectbox, .stTextInput {
         background-color: rgba(10, 10, 15, 0.94) !important;
         padding: 12px 16px !important;
@@ -48,21 +48,28 @@ st.markdown("""
         font-weight: bold !important;
         height: 35px !important;
     }
-    /* 🤖 ચાણક્ય AI બટનને સુંદર કસ્ટમ લુક આપવા માટે */
+    /* સ્ટાર્ટ ગેમ બટનની શાનદાર ગેમિંગ સ્ટાઇલ */
     .stButton>button {
-        background-color: #121216 !important;
+        background-color: rgba(10, 10, 15, 0.95) !important;
         color: #00ffff !important;
         border: 1px solid #00ffff !important;
         font-weight: bold !important;
-        transition: 0.3s;
+        border-radius: 8px !important;
+        width: 100% !important;
     }
     .stButton>button:hover {
         background-color: #00ffff !important;
         color: #000000 !important;
         box-shadow: 0 0 15px #00ffff;
     }
-    /* ચાણક્ય AI સ્પેશિયલ ડાર્ક પોપઅપ બોક્સ */
-    .ai-popup-box {
+    
+    /* 🚨 વચ્ચેથી કાળો પટ્ટો કાયમી માટે હટાવવાની સ્પેશિયલ ટ્રીક */
+    div[data-testid="stVerticalBlock"] > div:empty {
+        display: none !important;
+    }
+    
+    /* જમણી બાજુ ખુલનારા ચાણક્ય AI બોક્સનું સ્ટાઇલિંગ */
+    .ai-sidebar-box {
         background-color: rgba(15, 25, 35, 0.98) !important;
         border: 2px dashed #00ffff !important;
         padding: 12px;
@@ -75,7 +82,7 @@ st.markdown("""
 # 🎮 ઓફિશિયલ ગેમ ટાઇટલ હેડર
 st.markdown("<h1>🎮 BEST GAME FOR REVISION AND TEST</h1>", unsafe_allow_html=True)
 
-# 📚 તમામ ધોરણ અને ભાષાઓનો ડેટાબેઝ
+# 📚 તમામ ધોરણ અને ભાષાઓનો માસ્ટર ડેટાબેઝ
 if "base_db" not in st.session_state:
     st.session_state.base_db = {
         "Std 1": ["ગણિત ગમ્મત", "ગુજરાતી (કલરવ)", "અંગ્રેજી (English)"],
@@ -88,8 +95,8 @@ if "base_db" not in st.session_state:
         "Std 8": ["ગણિત (Maths)", "વિજ્ઞાન (Science)", "સામાજિક વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "हिन्दी", "સંસ્કૃત"],
         "Std 9": ["ગણિત (Maths)", "વિજ્ઞાન (Science)", "સામાજિક વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "हिन्दी", "સંસ્કૃત"],
         "Std 10": ["વિજ્ઞાન (Science)", "ગણિત (Maths)", "સામાજિક વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "हिन्दी", "સંસ્કૃત"],
-        "Std 11": ["ગણિત (Maths)", "ભૌતિક વિજ્ઞાન", "রসાયણ વિજ્ઞાન", "જીવ વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "એકાઉન્ટ", "સ્ટેટ્સ"],
-        "Std 12": ["ગણિત (Maths)", "ભૌતિક વિજ્ઞાન", "রসાયણ વિજ્ઞાન", "જીવ વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "એકાઉન્ટ", "સ્ટેટ્સ"]
+        "Std 11": ["ગણિત (Maths)", "ભૌતિક વિજ્ઞાન", "રસાયણ વિજ્ઞાન", "જીવ વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "એકાઉન્ટ", "સ્ટેટ્સ"],
+        "Std 12": ["ગણિત (Maths)", "ભૌતિક વિજ્ઞાન", "રસાયણ વિજ્ઞાન", "જીવ વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "એકાઉન્ટ", "સ્ટેટ્સ"]
     }
 
 if "real_questions" not in st.session_state:
@@ -104,7 +111,7 @@ if "real_questions" not in st.session_state:
         ],
         "ગુજરાતી (Gujarati)": [
             {"question": "નીચેનામાંથી કઈ જોડણી સાચી છે?", "options": ["પરિક્ષા", "પરીક્ષા", "પ્રિક્ષા", "પરિડ્શા"], "answer": "પરીક્ષા"},
-            {"question": "‘પર્વત’ શબ્દનો સાચો સમાનર્થી શબ્દ કયો થાય?", "options": ["નદી", "ગીરી", "સાગર", "આકાશ"], "answer": "ગીરી"}
+            {"question": "‘પર્વત’ શબ્દનો સાચો સમાનર્થી શબ્દ કયો થાય?", "options": ["નદી", "გიરી", "સાગર", "આકાશ"], "answer": "გიરી"}
         ],
         "અંગ્રેજી (English)": [
             {"question": "Identify the correct plural form of 'Child':", "options": ["Childs", "Childrens", "Children", "Childes"], "answer": "Children"},
@@ -144,15 +151,14 @@ def generate_infinite_question(subject):
             "answer": "સાચો વિકલ્પ"
         }
 
-# સેશન સ્ટેટ્સ
+# સેશન સ્ટેટ્સ સેટઅપ
 if "player_name" not in st.session_state: st.session_state.player_name = "Jasharaj"
 if "score" not in st.session_state: st.session_state.score = 100
 if "current_match_questions" not in st.session_state: st.session_state.current_match_questions = []
 if "match_index" not in st.session_state: st.session_state.match_index = 0
 if "game_mode" not in st.session_state: st.session_state.game_mode = "SETUP"
-if "ai_open" not in st.session_state: st.session_state.ai_open = False
 
-# 🕹️ મેઈન ગેમ કન્ટેન્ટ
+# 🕹️ મેઈન પેજ કન્ટેન્ટ (વચ્ચે ક્યાંય પણ ખાલી પટ્ટો નહીં આવે)
 if st.session_state.game_mode == "SETUP":
     st.subheader("⚙️ ગેમ સેટઅપ લોબી")
     name_input = st.text_input("✍️ તમારું નામ લખો:", value=st.session_state.player_name)
@@ -218,27 +224,19 @@ elif st.session_state.game_mode == "PLAYING":
                 st.session_state.game_mode = "SETUP"
                 st.rerun()
 
-# 🧠 --- ચાણક્ય AI બટન અને પોપઅપ જે હવે ૧૦૦% રાઇટ સાઇડ સેટ થઈ ગયું છે ---
-st.write("---")
-col_space, col_btn = st.columns([2.8, 1.2])
-
-with col_btn:
-    if st.button("🧠 ચાણક્ય AI ઓપન / ક્લોઝ", key="chanakya_fixed_btn"):
-        st.session_state.ai_open = not st.session_state.ai_open
-        st.rerun()
-
-# આ કન્ડિશન અંદર હોવાથી જ્યારે AI બંધ હશે ત્યારે નીચે કોઈ કાળો પટ્ટો નહીં દેખાય!
-if st.session_state.ai_open:
-    st.markdown("<div class='ai-popup-box'>", unsafe_allow_html=True)
-    st.subheader("🧠 ચાણક્ય AI")
+# 🧠 --- ચાણક્ય AI (તમે જે છેલ્લે રાઇટ એરો માર્યો છે, તે જ કસ્ટમ જગ્યાએ લોડ થશે) ---
+with st.expander("🧠 ચાણક્ય AI સાથે વાત કરો"):
+    st.markdown("<div class='ai-sidebar-box'>", unsafe_allow_html=True)
     if "study_chat_history" not in st.session_state: st.session_state.study_chat_history = []
     if not st.session_state.study_chat_history:
-        st.session_state.study_chat_history.append({"role": "assistant", "message": f"પ્રણામ {st.session_state.player_name} ભાઈ! હું ચાણક્ય AI છું. ભણવાનો કોઈ પણ પ્રશ્ન અહીં પૂછો!"})
+        st.session_state.study_chat_history.append({"role": "assistant", "message": f"પ્રણામ {st.session_state.player_name} ભાઈ! હું ચાણક્ય AI છું. શિક્ષણ કે રિવિઝનનો કોઈ પણ પ્રશ્ન અહીં પૂછો!"})
+    
     for chat in st.session_state.study_chat_history:
         with st.chat_message(chat["role"]): st.write(chat["message"])
-    if study_msg := st.chat_input("અહીં સવાલ પૂછો..."):
+        
+    if study_msg := st.chat_input("અહીં સવાલ પૂછો...", key="chanakya_chat_input"):
         st.session_state.study_chat_history.append({"role": "user", "message": study_msg})
-        reply = f"ખૂબ જ ઉત્તમ પ્રશ્ન {st.session_state.player_name} ભાઈ! હું આ વિષયને પાકો કરવામાં તમારી પૂરી મદદ કરીશ."
+        reply = f"ખૂબ જ ઉત્તમ પ્રશ્ન {st.session_state.player_name} ભાઈ! હું આ વિષયને સમજવામાં તમારી પૂરી મદદ કરીશ."
         st.session_state.study_chat_history.append({"role": "assistant", "message": reply})
         st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
