@@ -1,9 +1,10 @@
 import streamlit as st
 import random
+import json
+import os
+import base64
 
-# ==========================================
-# પેજ સેટિંગ
-# ==========================================
+# ================= PAGE =================
 
 st.set_page_config(
     page_title="ગુજરાતી એક્ઝામ ગેમ",
@@ -11,464 +12,296 @@ st.set_page_config(
     layout="wide"
 )
 
-# ==========================================
-# અવાજ
-# ==========================================
+# ================= SOUND =================
 
-def અવાજ(url):
-    st.markdown(
-        f"""
+def play_sound(path):
+    if os.path.exists(path):
+        with open(path, "rb") as f:
+            data = f.read()
+            b64 = base64.b64encode(data).decode()
+
+        md = f"""
         <audio autoplay>
-        <source src="{url}" type="audio/mp3">
+        <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
         </audio>
-        """,
-        unsafe_allow_html=True
-    )
+        """
 
-# ==========================================
-# CSS
-# ==========================================
+        st.markdown(md, unsafe_allow_html=True)
+
+# ================= CSS =================
 
 st.markdown("""
 <style>
 
 .stApp{
-    background: linear-gradient(135deg,#14002e,#240046,#3c096c,#5a189a);
+    background: linear-gradient(135deg,#12002f,#32006b,#001f5c);
+    color:white;
 }
 
-/* Main Box */
-.main-box{
-    background:#05010f;
-    border:2px solid cyan;
-    border-radius:25px;
+.main-title{
+    text-align:center;
+    font-size:60px;
+    font-weight:bold;
+    color:#00ffff;
+    text-shadow:0px 0px 20px cyan;
+    margin-bottom:30px;
+}
+
+.box{
+    background:rgba(0,0,0,0.55);
     padding:25px;
-    box-shadow:0px 0px 20px cyan;
+    border-radius:25px;
+    border:2px solid cyan;
+    box-shadow:0px 0px 25px cyan;
     margin-bottom:20px;
 }
 
-/* Title */
-.title{
-    text-align:center;
-    color:white;
-    font-size:60px;
-    font-weight:bold;
-    text-shadow:0px 0px 20px cyan;
-}
-
-/* Setup Box */
-.setup-box{
-    background:#0b1020;
-    border:2px solid cyan;
-    border-radius:20px;
-    padding:20px;
-    margin-top:20px;
-    box-shadow:0px 0px 15px cyan;
-}
-
-/* Question */
 .question-box{
-    background:#0d1325;
-    border:2px solid #38bdf8;
+    background:rgba(255,255,255,0.08);
+    padding:30px;
     border-radius:20px;
-    padding:25px;
-    margin-top:20px;
-    box-shadow:0px 0px 15px #06b6d4;
+    border:2px solid #00ffff;
+    box-shadow:0px 0px 20px #00ffff;
 }
 
-/* Text */
-.white{
-    color:white;
-}
-
-/* Head */
-.head{
-    color:cyan;
-    font-size:28px;
-    font-weight:bold;
-}
-
-/* Score */
-.score{
-    color:#22c55e;
-    font-size:40px;
-    font-weight:bold;
-}
-
-/* Buttons */
-.stButton button{
+.stButton>button{
     width:100%;
-    background:linear-gradient(90deg,#06b6d4,#2563eb);
-    color:white;
+    background:linear-gradient(90deg,#00ffff,#00ff99);
+    color:black;
     border:none;
     border-radius:15px;
-    padding:14px;
     font-size:20px;
     font-weight:bold;
+    padding:15px;
 }
 
-.stButton button:hover{
-    transform:scale(1.02);
-    box-shadow:0px 0px 15px cyan;
-}
-
-/* Radio */
-.stRadio label{
+.stSelectbox label{
     color:white !important;
     font-size:20px !important;
 }
 
-/* Select */
-.stSelectbox label{
-    color:white !important;
-    font-size:18px !important;
-}
-
-/* Input */
 .stTextInput label{
     color:white !important;
-    font-size:18px !important;
+    font-size:20px !important;
+}
+
+.score{
+    text-align:center;
+    font-size:35px;
+    color:#00ff99;
+    font-weight:bold;
+}
+
+.question{
+    font-size:38px;
+    font-weight:bold;
+    color:white;
+}
+
+.chapter{
+    font-size:22px;
+    color:#00ffff;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# ==========================================
-# બધા પ્રશ્નો
-# ==========================================
+# ================= TITLE =================
 
-questions = {
+st.markdown(
+    "<div class='main-title'>🎮 ગુજરાતી એક્ઝામ ક્વિઝ ગેમ 🎮</div>",
+    unsafe_allow_html=True
+)
 
-"ધોરણ ૧૦": {
+# ================= DATA =================
 
-"ગણિત": {
+quiz_data = {
 
-"વાસ્તવિક સંખ્યાઓ": [
+    "ધોરણ ૧૦": {
 
-{
-"question":"૨ અને ૫ સિવાય અન્ય અવયવ ધરાવતી હરવાળી સંખ્યા કેવી દશાંશ આપે?",
-"options":["અસીમ આવર્ત દશાંશ","સીમિત દશાંશ","પૂર્ણાંક","પ્રાકૃતિક સંખ્યા"],
-"answer":"અસીમ આવર્ત દશાંશ"
-},
+        "ગણિત": {
 
-{
-"question":"યુક્લિડ વિભાગ અલ્ગોરિધમ કયા માટે ઉપયોગી છે?",
-"options":["મહત્તમ સામાન્ય અવયવ","લઘુત્તમ સામાન્ય ગુણાક","ઘાતાંક","વિસ્તાર"],
-"answer":"મહત્તમ સામાન્ય અવયવ"
-},
+            "વાસ્તવિક સંખ્યાઓ": [
 
-{
-"question":"HCF નો સંપૂર્ણ અર્થ શું છે?",
-"options":["મહત્તમ સામાન્ય અવયવ","લઘુત્તમ સામાન્ય ગુણાક","ઘનમૂલ","ભાગાકાર"],
-"answer":"મહત્તમ સામાન્ય અવયવ"
-}
+                {
+                    "પ્રશ્ન": "૨ અને ૩ નો લઘુત્તમ સમાપવર્તક કેટલો?",
+                    "વિકલ્પો": ["૬", "૯", "૩", "૧૨"],
+                    "સાચો": "૬"
+                },
 
-],
+                {
+                    "પ્રશ્ન": "૫ નો વર્ગ કેટલો?",
+                    "વિકલ્પો": ["૧૦", "૧૫", "૨૫", "૨૦"],
+                    "સાચો": "૨૫"
+                },
 
-"ત્રિકોણમિતિ": [
+                {
+                    "પ્રશ્ન": "૪ નો ઘન કેટલો?",
+                    "વિકલ્પો": ["૧૬", "૩૨", "૬૪", "૪૮"],
+                    "સાચો": "૬૪"
+                }
 
-{
-"question":"sin²θ + cos²θ નું મૂલ્ય શું છે?",
-"options":["૧","૦","૨","અનંત"],
-"answer":"૧"
-},
+            ],
 
-{
-"question":"tanθ = ?",
-"options":["sinθ/cosθ","cosθ/sinθ","૧","૦"],
-"answer":"sinθ/cosθ"
-},
+            "ત્રિકોણ": [
 
-{
-"question":"૩૦° નો sin કેટલો?",
-"options":["૧/૨","૧","૦","√૩"],
-"answer":"૧/૨"
-}
+                {
+                    "પ્રશ્ન": "ત્રિકોણમાં કેટલા ખૂણા હોય છે?",
+                    "વિકલ્પો": ["૨", "૩", "૪", "૫"],
+                    "સાચો": "૩"
+                },
 
-],
+                {
+                    "પ્રશ્ન": "સમબાહુ ત્રિકોણની બધી બાજુ કેવી હોય છે?",
+                    "વિકલ્પો": ["અસમાન", "બે સમાન", "બધી સમાન", "કોઈ નહીં"],
+                    "સાચો": "બધી સમાન"
+                }
 
-"વૃત્ત": [
+            ]
 
-{
-"question":"વૃત્તની ત્રિજ્યા ૭ હોય તો વ્યાસ કેટલો?",
-"options":["૭","૧૪","૨૧","૨૮"],
-"answer":"૧૪"
-},
+        },
 
-{
-"question":"વૃત્તનો વ્યાસ ત્રિજ્યાનો કેટલો ગણો હોય છે?",
-"options":["૨","૩","૪","૧"],
-"answer":"૨"
-}
+        "વિજ્ઞાન": {
 
-]
+            "વિદ્યુત": [
 
-},
+                {
+                    "પ્રશ્ન": "ઓહ્મનો નિયમ કયા સંબંધને દર્શાવે છે?",
+                    "વિકલ્પો": [
+                        "વિદ્યુત પ્રવાહ અને વિભવ તફાવત",
+                        "ભાર અને ગતિ",
+                        "ઉષ્ણતા અને દબાણ",
+                        "લંબાઈ અને સમય"
+                    ],
+                    "સાચો": "વિદ્યુત પ્રવાહ અને વિભવ તફાવત"
+                },
 
-"વિજ્ઞાન": {
+                {
+                    "પ્રશ્ન": "વિદ્યુત પ્રવાહનું એકમ શું છે?",
+                    "વિકલ્પો": ["વોલ્ટ", "એમ્પિયર", "ઓહ્મ", "વોટ"],
+                    "સાચો": "એમ્પિયર"
+                }
 
-"વિદ્યુત": [
+            ],
 
-{
-"question":"ઓહમનો નિયમ કોના સંબંધને દર્શાવે છે?",
-"options":["વિભવાંતર અને વિદ્યુત પ્રવાહ","ભાર અને ગતિ","દબાણ અને ઘનફળ","તાપ અને ઊર્જા"],
-"answer":"વિભવાંતર અને વિદ્યુત પ્રવાહ"
-},
+            "પ્રકાશ": [
 
-{
-"question":"વિદ્યુત પ્રવાહનું એકમ શું છે?",
-"options":["એમ્પિયર","વોલ્ટ","વોટ","જૂલ"],
-"answer":"એમ્પિયર"
-},
+                {
+                    "પ્રશ્ન": "પ્રકાશની ગતિ કેટલી છે?",
+                    "વિકલ્પો": [
+                        "૩×૧૦⁸ મીટર પ્રતિ સેકંડ",
+                        "૩×૧૦⁶ મીટર પ્રતિ સેકંડ",
+                        "૩×૧૦⁴ મીટર પ્રતિ સેકંડ",
+                        "૩×૧૦² મીટર પ્રતિ સેકંડ"
+                    ],
+                    "સાચો": "૩×૧૦⁸ મીટર પ્રતિ સેકંડ"
+                }
 
-{
-"question":"વિદ્યુત શક્તિનું એકમ શું છે?",
-"options":["વોટ","એમ્પિયર","ઓહમ","વોલ્ટ"],
-"answer":"વોટ"
-}
+            ]
 
-],
+        }
 
-"પ્રકાશ": [
-
-{
-"question":"અવતલ દર્પણ ક્યાં ઉપયોગી છે?",
-"options":["વાહનના હેડલાઇટમાં","ઘડિયાળમાં","પંખામાં","દરવાજામાં"],
-"answer":"વાહનના હેડલાઇટમાં"
-},
-
-{
-"question":"પ્રકાશની ગતિ કેટલી છે?",
-"options":["૩×૧૦⁸ મીટર/સેકન્ડ","૩×૧૦⁶","૩×૧૦⁴","૩×૧૦²"],
-"answer":"૩×૧૦⁸ મીટર/સેકન્ડ"
-}
-
-]
-
-},
-
-"સામાજિક વિજ્ઞાન": {
-
-"રાષ્ટ્રીય આંદોલન": [
-
-{
-"question":"દાંડી કૂચ કોણે શરૂ કરી હતી?",
-"options":["મહાત્મા ગાંધી","સરદાર પટેલ","જવાહરલાલ નેહરુ","સુભાષચંદ્ર બોઝ"],
-"answer":"મહાત્મા ગાંધી"
-},
-
-{
-"question":"ભારત છોડો આંદોલન ક્યારે થયું?",
-"options":["૧૯૪૨","૧૯૪૭","૧૯૩૦","૧૯૨૦"],
-"answer":"૧૯૪૨"
-}
-
-]
+    }
 
 }
 
-},
+# ================= MENU =================
 
-"ધોરણ ૯": {
+col1, col2 = st.columns([1,2])
 
-"ગણિત": {
+with col1:
 
-"રેખાઓ અને ખૂણાઓ": [
+    st.markdown("<div class='box'>", unsafe_allow_html=True)
 
-{
-"question":"સામસામેના ખૂણાઓને શું કહે છે?",
-"options":["વિપરીત ખૂણાઓ","પૂરક ખૂણાઓ","લઘુ ખૂણાઓ","સમકોણ"],
-"answer":"વિપરીત ખૂણાઓ"
-},
+    નામ = st.text_input("તમારું નામ લખો")
 
-{
-"question":"સમકોણ કેટલા અંશનો હોય છે?",
-"options":["૯૦","૪૫","૧૮૦","૩૬૦"],
-"answer":"૯૦"
-}
+    ધોરણ = st.selectbox(
+        "ધોરણ પસંદ કરો",
+        list(quiz_data.keys())
+    )
 
-]
+    વિષય = st.selectbox(
+        "વિષય પસંદ કરો",
+        list(quiz_data[ધોરણ].keys())
+    )
 
-},
+    પ્રકરણ = st.selectbox(
+        "પ્રકરણ પસંદ કરો",
+        list(quiz_data[ધોરણ][વિષય].keys())
+    )
 
-"વિજ્ઞાન": {
+    st.markdown("</div>", unsafe_allow_html=True)
 
-"પદાર્થ": [
+# ================= QUESTIONS =================
 
-{
-"question":"ઘન પદાર્થમાં કણો કેવી સ્થિતિમાં હોય છે?",
-"options":["ઘનિષ્ઠ રીતે ગોઠવાયેલા","દૂર દૂર","અવ્યવસ્થિત","પ્રવાહી"],
-"answer":"ઘનિષ્ઠ રીતે ગોઠવાયેલા"
-},
+questions = quiz_data[ધોરણ][વિષય][પ્રકરણ]
 
-{
-"question":"પાણી કઈ અવસ્થામાં મળે છે?",
-"options":["ત્રણે અવસ્થામાં","માત્ર ઘન","માત્ર વાયુ","માત્ર પ્રવાહી"],
-"answer":"ત્રણે અવસ્થામાં"
-}
-
-]
-
-}
-
-}
-
-}
-
-# ==========================================
-# સેશન
-# ==========================================
+if "question_index" not in st.session_state:
+    st.session_state.question_index = 0
 
 if "score" not in st.session_state:
     st.session_state.score = 0
 
-# ==========================================
-# મુખ્ય શીર્ષક
-# ==========================================
+if st.session_state.question_index >= len(questions):
+    st.session_state.question_index = 0
 
-st.markdown("""
-<div class="main-box">
-<div class="title">
-🎮 ગુજરાતી એક્ઝામ ગેમ 🎮
-</div>
-</div>
-""", unsafe_allow_html=True)
-
-# ==========================================
-# ગેમ સેટઅપ
-# ==========================================
-
-st.markdown("""
-<div class="setup-box">
-<div class="head">
-⚙️ ગેમ સેટઅપ
-</div>
-</div>
-""", unsafe_allow_html=True)
-
-col1, col2, col3, col4 = st.columns(4)
-
-with col1:
-    name = st.text_input("તમારું નામ")
+q = questions[st.session_state.question_index]
 
 with col2:
-    std = st.selectbox(
-        "ધોરણ પસંદ કરો",
-        list(questions.keys())
+
+    st.markdown("<div class='question-box'>", unsafe_allow_html=True)
+
+    st.markdown(
+        f"<div class='chapter'>📘 પ્રકરણ: {પ્રકરણ}</div>",
+        unsafe_allow_html=True
     )
 
-with col3:
-    subject = st.selectbox(
-        "વિષય પસંદ કરો",
-        list(questions[std].keys())
+    st.markdown(
+        f"<div class='score'>🏆 સ્કોર: {st.session_state.score}</div>",
+        unsafe_allow_html=True
     )
 
-with col4:
-    chapter = st.selectbox(
-        "પ્રકરણ પસંદ કરો",
-        list(questions[std][subject].keys())
+    st.markdown(
+        f"<div class='question'>{q['પ્રશ્ન']}</div>",
+        unsafe_allow_html=True
     )
 
-# ==========================================
-# પ્રશ્ન
-# ==========================================
-
-question_data = random.choice(
-    questions[std][subject][chapter]
-)
-
-question = question_data["question"]
-options = question_data["options"]
-answer = question_data["answer"]
-
-# ==========================================
-# પ્રશ્ન UI
-# ==========================================
-
-left,right = st.columns([3,1])
-
-with left:
-
-    st.markdown(f"""
-    <div class="question-box">
-
-    <div class="head">
-    📘 પ્રકરણ : {chapter}
-    </div>
-
-    <br>
-
-    <h2 class="white">
-    {question}
-    </h2>
-
-    </div>
-    """, unsafe_allow_html=True)
-
-    selected = st.radio(
+    answer = st.radio(
         "જવાબ પસંદ કરો",
-        options
+        q["વિકલ્પો"]
     )
 
-    c1,c2 = st.columns(2)
+    colA, colB = st.columns(2)
 
-    with c1:
+    with colA:
 
-        if st.button("✅ જવાબ સબમિટ કરો"):
+        if st.button("જવાબ સબમિટ કરો"):
 
-            if selected == answer:
-
-                st.session_state.score += 1
-
-                અવાજ("https://www.soundjay.com/buttons/sounds/button-09.mp3")
+            if answer == q["સાચો"]:
 
                 st.success("સાચો જવાબ 🎉")
 
-                st.balloons()
+                st.session_state.score += 1
+
+                play_sound("correct.mp3")
 
             else:
 
-                અવાજ("https://www.soundjay.com/buttons/sounds/button-10.mp3")
+                st.error(f"ખોટો જવાબ ❌")
 
-                st.error(f"ખોટો જવાબ ❌ સાચો જવાબ : {answer}")
+                st.info(f"સાચો જવાબ: {q['સાચો']}")
 
-    with c2:
+                play_sound("wrong.mp3")
 
-        if st.button("🔄 નવો પ્રશ્ન"):
+    with colB:
 
-            અવાજ("https://www.soundjay.com/buttons/sounds/button-3.mp3")
+        if st.button("આગળનો પ્રશ્ન"):
+
+            st.session_state.question_index += 1
+
+            if st.session_state.question_index >= len(questions):
+                st.session_state.question_index = 0
 
             st.rerun()
 
-with right:
-
-    st.markdown(f"""
-    <div class="main-box">
-
-    <div class="head">
-    🏆 સ્કોર
-    </div>
-
-    <br>
-
-    <div class="score">
-    {st.session_state.score}
-    </div>
-
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("""
-    <div class="main-box">
-
-    <div class="head">
-    📚 અભ્યાસ
-    </div>
-
-    <br>
-
-    <p style='color:white;font-size:18px;'>
-    રોજ પ્રશ્નો ઉકેલો અને પરીક્ષામાં વધુ ગુણ મેળવો.
-    </p>
-
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
