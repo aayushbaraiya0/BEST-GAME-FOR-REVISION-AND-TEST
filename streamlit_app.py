@@ -1,4 +1,3 @@
-```python
 import streamlit as st
 import random
 import sqlite3
@@ -90,12 +89,18 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------- TITLE ----------------
-st.markdown('<div class="title">🎮 ગુજરાતી એક્ઝામ ગેમ 🎮</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="title">🎮 ગુજરાતી એક્ઝામ ગેમ 🎮</div>',
+    unsafe_allow_html=True
+)
 
 # ---------------- QUESTIONS ----------------
 questions_data = {
+
     "ધોરણ 10": {
+
         "વિજ્ઞાન": [
+
             {
                 "chapter": "રાસાયણિક પ્રતિક્રિયા",
                 "question": "મેગ્નેશિયમ રિબન હવામાં બળે ત્યારે શું બને છે?",
@@ -107,6 +112,7 @@ questions_data = {
                 ],
                 "answer": "મેગ્નેશિયમ ઓક્સાઇડ"
             },
+
             {
                 "chapter": "જીવન પ્રક્રિયા",
                 "question": "પ્રકાશ સંશ્લેષણ માટે જવાબદાર રંગદ્રવ્ય કયું છે?",
@@ -117,10 +123,24 @@ questions_data = {
                     "કેરોટિન"
                 ],
                 "answer": "ક્લોરોફિલ"
+            },
+
+            {
+                "chapter": "વિદ્યુત",
+                "question": "ઓહ્મનો નિયમ કોના સંબંધને દર્શાવે છે?",
+                "options": [
+                    "દબાણ અને તાપમાન",
+                    "પ્રવાહ અને વિદ્યુત દબાણ",
+                    "ભાર અને ગતિ",
+                    "પ્રકાશ અને અવાજ"
+                ],
+                "answer": "પ્રવાહ અને વિદ્યુત દબાણ"
             }
+
         ],
 
         "ગણિત": [
+
             {
                 "chapter": "ત્રિકોણમિતિ",
                 "question": "sin²θ + cos²θ = ?",
@@ -132,6 +152,7 @@ questions_data = {
                 ],
                 "answer": "1"
             },
+
             {
                 "chapter": "વૃત્ત",
                 "question": "વૃત્તનું ક્ષેત્રફળ શું છે?",
@@ -143,6 +164,42 @@ questions_data = {
                 ],
                 "answer": "πr²"
             }
+
+        ]
+    },
+
+    "ધોરણ 9": {
+
+        "વિજ્ઞાન": [
+
+            {
+                "chapter": "કોષ",
+                "question": "કોષનો નિયંત્રણ કેન્દ્ર કયો છે?",
+                "options": [
+                    "સાયટોપ્લાઝમ",
+                    "કોષભિત્તિ",
+                    "કેન્દ્રક",
+                    "માઇટોકોન્ડ્રિયા"
+                ],
+                "answer": "કેન્દ્રક"
+            }
+
+        ],
+
+        "ગણિત": [
+
+            {
+                "chapter": "રેખાઓ અને ખૂણાઓ",
+                "question": "ત્રિકોણના આંતરિક ખૂણાનો સરવાળો કેટલો થાય?",
+                "options": [
+                    "90°",
+                    "180°",
+                    "360°",
+                    "270°"
+                ],
+                "answer": "180°"
+            }
+
         ]
     }
 }
@@ -162,7 +219,6 @@ subject = st.sidebar.selectbox(
     list(questions_data[standard].keys())
 )
 
-# ---------------- LOAD QUESTIONS ----------------
 questions = questions_data[standard][subject]
 
 # ---------------- SESSION ----------------
@@ -184,7 +240,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# ---------------- END GAME ----------------
+# ---------------- GAME END ----------------
 if st.session_state.question_index >= len(st.session_state.random_questions):
 
     st.success("🎉 ગેમ પૂર્ણ થઈ ગઈ!")
@@ -212,12 +268,14 @@ if st.session_state.question_index >= len(st.session_state.random_questions):
         st.write(f"{i}. {row[0]} - {row[1]}")
 
     if st.button("🔄 ફરીથી રમો"):
+
         st.session_state.score = 0
         st.session_state.question_index = 0
         st.session_state.random_questions = random.sample(
             questions,
             len(questions)
         )
+
         st.rerun()
 
 # ---------------- QUESTIONS ----------------
@@ -228,13 +286,13 @@ else:
     ]
 
     st.markdown(
-        f'''
+        f"""
         <div class="box">
             <div class="chapter">📘 પ્રકરણ : {q['chapter']}</div>
             <br>
             <div class="question">{q['question']}</div>
         </div>
-        ''',
+        """,
         unsafe_allow_html=True
     )
 
@@ -252,12 +310,13 @@ else:
             if selected == q["answer"]:
 
                 st.session_state.score += 1
-
                 st.success("🎉 સાચો જવાબ!")
 
             else:
 
-                st.error(f"❌ ખોટો જવાબ! સાચો જવાબ : {q['answer']}")
+                st.error(
+                    f"❌ ખોટો જવાબ! સાચો જવાબ : {q['answer']}"
+                )
 
             time.sleep(1)
 
@@ -276,10 +335,3 @@ else:
 # ---------------- FOOTER ----------------
 st.markdown("---")
 st.caption("⚡ ગુજરાતી બોર્ડ એક્ઝામ માટે બનાવેલ ગેમ")
-```
-
-# requireme
-
-```txt
-streamlit
-```
