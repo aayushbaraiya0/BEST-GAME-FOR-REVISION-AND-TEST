@@ -24,9 +24,9 @@ data_structure = {
     }
 }
 
-# ================= 🤖 પ્રશ્ન એન્જિન =================
-def get_dynamic_question(ch, sub):
-    # દરેક વિષય માટેના પ્રશ્નો
+# ================= 🤖 પ્રશ્ન એન્જિન (ફિક્સ કરેલું) =================
+# અહીં આપણે 3 પેરામીટર સ્વીકારીએ છીએ
+def get_dynamic_question(ch, sub, q_index):
     questions = {
         "વિજ્ઞાન": [
             {"પ્રશ્ન": "એસિડ સ્વાદે કેવા હોય છે?", "વિકલ્પો": ["ખાટા", "તૂરા", "કડવા", "મીઠા"], "સાચો": "ખાટા"},
@@ -41,7 +41,6 @@ def get_dynamic_question(ch, sub):
         ]
     }
     
-    # વિષય મુજબ પ્રશ્ન પસંદ કરો
     sub_key = next((k for k in questions.keys() if k in sub), "વિજ્ઞાન")
     return random.choice(questions[sub_key])
 
@@ -55,6 +54,7 @@ ch = st.selectbox("પ્રકરણ પસંદ કરો:", data_structure[s
 if "score" not in st.session_state: st.session_state.score = 0
 if "q_num" not in st.session_state: st.session_state.q_num = 1
 
+# હવે 3 પેરામીટર સાથે ફંક્શન કોલ થશે
 q = get_dynamic_question(ch, sub, st.session_state.q_num)
 
 st.write(f"### પ્રશ્ન {st.session_state.q_num}: {q['પ્રશ્ન']}")
