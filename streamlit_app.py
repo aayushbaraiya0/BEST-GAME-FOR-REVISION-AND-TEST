@@ -1,263 +1,766 @@
+# =========================================================
+# 🎮 CHANAKYA AI GAME - FULL NCERT EDITION
+# =========================================================
+
 import streamlit as st
 import random
+from groq import Groq
+import base64
 
-# layout="centered" કરવાથી આખી ગેમ સ્ક્રીનની વચ્ચે એકદમ નાની અને સ્લિમ થઈ જશે
-st.set_page_config(page_title="Best Game for Revision and Test", page_icon="🎮", layout="centered")
+# =========================================================
+# 🎮 PAGE CONFIG
+# =========================================================
 
-# શાનદાર પ્યોર RGB અને સુપર સ્લિમ ગેમિંગ થીમ
+st.set_page_config(
+    page_title="🎮 Chanakya AI Game",
+    page_icon="🎮",
+    layout="centered"
+)
+
+# =========================================================
+# 🔐 GROQ API
+# =========================================================
+
+# CREATE:
+# .streamlit/secrets.toml
+#
+# ADD:
+# GROQ_API_KEY="your_groq_api_key"
+
+client = Groq(
+    api_key=st.secrets["GROQ_API_KEY"]
+)
+
+# =========================================================
+# 🔊 SOUND SYSTEM
+# =========================================================
+
+def autoplay_audio(file_path):
+
+    with open(file_path, "rb") as f:
+
+        data = f.read()
+
+    b64 = base64.b64encode(data).decode()
+
+    md = f"""
+    <audio autoplay>
+    <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+    </audio>
+    """
+
+    st.markdown(md, unsafe_allow_html=True)
+
+# =========================================================
+# 🌈 RGB GAMING CSS
+# =========================================================
+
 st.markdown("""
-    <style>
-    .stApp {
-        background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #1de840, #1ddde8, #2b1de8, #dd00ff, #dd00ff);
-        background-size: 1600% 1600%;
-        animation: RGB-Animation 14s ease infinite;
-    }
-    @keyframes RGB-Animation {
-        0%{background-position:0% 82%}
-        50%{background-position:100% 19%}
-        100%{background-position:0% 82%}
-    }
-    /* ગેમ લોબીના બધા મુખ્ય બોક્સને સ્લિમ કરવા માટે */
-    .stRadio, .stMarkdown, .stSelectbox, .stTextInput {
-        background-color: rgba(10, 10, 15, 0.94) !important;
-        padding: 12px 16px !important;
-        border-radius: 10px !important;
-        color: #ffffff !important;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
-        border: 1px solid #00ffff !important;
-        margin-bottom: 8px !important;
-    }
-    label[data-testid="stWidgetLabel"], div[data-testid="stRadio"] label, p, span {
-        color: #ffffff !important;
-        font-size: 14px !important;
-    }
-    h1 {
-        color: #00ffff !important;
-        text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
-        text-align: center;
-        font-size: 24px !important;
-        margin-bottom: 15px !important;
-    }
-    h2, h3 {
-        color: #00ffff !important;
-        font-size: 18px !important;
-    }
-    /* નામ લખવાના બોક્સનો ટેક્સ્ટ કલર ડાર્ક કાળો */
-    input { 
-        color: #000000 !important; 
-        font-weight: bold !important;
-        height: 35px !important;
-    }
-    /* સ્ટાર્ટ ગેમ બટનની શાનદાર ગેમિંગ સ્ટાઇલ */
-    .stButton>button {
-        background-color: rgba(10, 10, 15, 0.95) !important;
-        color: #00ffff !important;
-        border: 1px solid #00ffff !important;
-        font-weight: bold !important;
-        border-radius: 8px !important;
-        width: 100% !important;
-    }
-    .stButton>button:hover {
-        background-color: #00ffff !important;
-        color: #000000 !important;
-        box-shadow: 0 0 15px #00ffff;
-    }
-    
-    /* વચ્ચેથી નકામો કાળો પટ્ટો હટાવવાની ટ્રીક */
-    div[data-testid="stVerticalBlock"] > div:empty {
-        display: none !important;
-    }
-    
-    /* ચાણક્ય AI બોક્સનું સ્ટાઇલિંગ */
-    .ai-sidebar-box {
-        background-color: rgba(15, 25, 35, 0.98) !important;
-        border: 2px dashed #00ffff !important;
-        padding: 12px;
-        border-radius: 8px;
-        margin-top: 10px;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+<style>
 
-# 🎮 ઓફિશિયલ ગેમ ટાઇટલ હેડર
-st.markdown("<h1>🎮 BEST GAME FOR REVISION AND TEST</h1>", unsafe_allow_html=True)
+.stApp {
 
-# 📚 ધોરણ ૧ થી ૧૨ નો સાચો પ્રકરણો (Chapters) વાળો અસલી ડેટાબેઝ
+    background: linear-gradient(
+        124deg,
+        #ff0000,
+        #ff7300,
+        #fffb00,
+        #48ff00,
+        #00ffd5,
+        #002bff,
+        #7a00ff,
+        #ff00ab
+    );
+
+    background-size: 1800% 1800%;
+
+    animation: rgb 15s ease infinite;
+}
+
+@keyframes rgb {
+
+    0% {background-position:0% 50%;}
+    50% {background-position:100% 50%;}
+    100% {background-position:0% 50%;}
+}
+
+h1 {
+
+    color: cyan !important;
+
+    text-align: center;
+
+    text-shadow: 0 0 20px cyan;
+}
+
+.question-card {
+
+    background: rgba(0,0,0,0.8);
+
+    padding: 20px;
+
+    border-radius: 15px;
+
+    border: 2px solid cyan;
+
+    box-shadow: 0 0 20px cyan;
+
+    margin-bottom: 15px;
+}
+
+.ai-box {
+
+    background: rgba(0,0,0,0.85);
+
+    border: 2px dashed cyan;
+
+    border-radius: 15px;
+
+    padding: 15px;
+}
+
+.stButton>button {
+
+    width: 100%;
+
+    background: black;
+
+    color: cyan;
+
+    border: 1px solid cyan;
+
+    border-radius: 10px;
+
+    font-weight: bold;
+}
+
+.stButton>button:hover {
+
+    background: cyan;
+
+    color: black;
+
+    box-shadow: 0 0 20px cyan;
+}
+
+label,p,span {
+
+    color: white !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# =========================================================
+# 🎵 BACKGROUND MUSIC
+# =========================================================
+
+if "music_started" not in st.session_state:
+
+    st.session_state.music_started = True
+
+    autoplay_audio("sounds/bgmusic.mp3")
+
+# =========================================================
+# 🧠 CHANAKYA AI
+# =========================================================
+
+def ask_chanakya_ai(question):
+
+    try:
+
+        response = client.chat.completions.create(
+
+            model="llama3-70b-8192",
+
+            messages=[
+
+                {
+                    "role": "system",
+
+                    "content": """
+                    You are Chanakya AI.
+
+                    You teach students from Std 6 to Std 10.
+
+                    Explain in Gujarati.
+
+                    Make answers simple and motivating.
+                    """
+                },
+
+                {
+                    "role": "user",
+                    "content": question
+                }
+            ],
+
+            temperature=0.7,
+            max_tokens=500
+        )
+
+        return response.choices[0].message.content
+
+    except Exception as e:
+
+        return f"⚠️ AI Error: {e}"
+
+# =========================================================
+# 📚 FULL NCERT DATABASE
+# =========================================================
+
 if "base_db" not in st.session_state:
+
     st.session_state.base_db = {
-        "Std 1": {
-            "ગણિત ગમ્મત": ["Ch 1: આકારો અને જગ્યા", "Ch 2: ૧ થી ૯ સુધીની સંખ્યા"],
-            "ગુજરાતી (કલરવ)": ["Ch 1: શાળા તત્પરતા ૧", "Ch 2: ચક્કીબેન ચક્કીબેન"]
-        },
+
         "Std 6": {
-            "વિજ્ઞાન (Science)": ["Ch 1: ખોરાક ક્યાંથી મળે છે?", "Ch 2: આહારના ઘટકો"],
-            "ગણિત (Maths)": ["Ch 1: આપણી સંખ્યાઓને જાણવી", "Ch 2: પૂર્ણ સંખ્યાઓ"],
-            "ગુજરાતી": ["Ch 1: રેલવે સ્ટેશન", "Ch 2: હિંદ માતાને સંબોધન"]
-        },
-        "Std 9": {
-            "વિજ્ઞાન (Science)": ["Ch 1: આપણી આસપાસમાં દ્રવ્ય", "Ch 2: શું આપણી આસપાસના દ્રવ્યો શુદ્ધ છે?"],
-            "ગણિત (Maths)": ["Ch 1: સંખ્યા પદ્ધતિ", "Ch 2: બહુપદીઓ"]
-        },
-        "Std 10": {
-            "વિજ્ઞાન (Science)": [
-                "Ch 1: રાસાયણિક પ્રક્રિયાઓ અને સમીકરણો", 
-                "Ch 2: એસિડ, બેઇઝ અને ક્ષાર", 
-                "Ch 6: જૈવિક ક્રિયાઓ",
-                "Ch 10: પ્રકાશ-પરાવર્તન અને વક્રીભવન"
-            ],
+
             "ગણિત (Maths)": [
-                "Ch 1: વાસ્તવિક સંખ્યાઓ", 
-                "Ch 2: બહુપદીઓ", 
-                "Ch 5: સમાંતર શ્રેણી",
-                "Ch 14: આંકડાશાસ્ત્ર"
+
+                "Knowing Our Numbers",
+                "Whole Numbers",
+                "Playing with Numbers",
+                "Basic Geometrical Ideas",
+                "Understanding Elementary Shapes",
+                "Integers",
+                "Fractions",
+                "Decimals",
+                "Data Handling",
+                "Mensuration",
+                "Algebra",
+                "Ratio and Proportion",
+                "Symmetry",
+                "Practical Geometry"
             ],
-            "ગુજરાતી (Gujarati)": ["Ch 1: મોરલી", "Ch 2: શરણાઈના સૂર", "Ch 4: જીવન અંજલિ થાજો"],
-            "અંગ્રેજી (English)": ["Ch 1: Against the Odds", "Ch 2: The Human Robot"]
+
+            "વિજ્ઞાન (Science)": [
+
+                "Food",
+                "Components of Food",
+                "Fibre to Fabric",
+                "Sorting Materials",
+                "Separation of Substances",
+                "Changes Around Us",
+                "Getting to Know Plants",
+                "Body Movements",
+                "Living Organisms",
+                "Motion and Measurement",
+                "Light",
+                "Electricity",
+                "Fun with Magnets",
+                "Water",
+                "Air Around Us",
+                "Garbage In Garbage Out"
+            ]
         },
-        "Std 11": {"ગણિત": ["Ch 1: ગણ"], "भૌતિક વિજ્ઞાન": ["Ch 1: એકમ અને માપન"]},
-        "Std 12": {"ગણિત": ["Ch 1: સંબંધ અને વિધેય"], "ભૌતિક વિજ્ઞાન": ["Ch 1: વિદ્યુતભારો અને ક્ષેત્રો"]}
+
+        "Std 7": {
+
+            "ગણિત (Maths)": [
+
+                "Integers",
+                "Fractions and Decimals",
+                "Data Handling",
+                "Simple Equations",
+                "Lines and Angles",
+                "The Triangle",
+                "Congruence of Triangles",
+                "Comparing Quantities",
+                "Rational Numbers",
+                "Practical Geometry",
+                "Perimeter and Area",
+                "Algebraic Expressions",
+                "Exponents and Powers",
+                "Symmetry",
+                "Visualising Solid Shapes"
+            ],
+
+            "વિજ્ઞાન (Science)": [
+
+                "Nutrition in Plants",
+                "Nutrition in Animals",
+                "Heat",
+                "Acids Bases and Salts",
+                "Physical and Chemical Changes",
+                "Respiration",
+                "Transportation",
+                "Motion and Time",
+                "Electric Current",
+                "Light"
+            ]
+        },
+
+        "Std 8": {
+
+            "ગણિત (Maths)": [
+
+                "Rational Numbers",
+                "Linear Equations",
+                "Understanding Quadrilaterals",
+                "Practical Geometry",
+                "Data Handling",
+                "Squares and Square Roots",
+                "Cubes and Cube Roots",
+                "Comparing Quantities",
+                "Algebraic Expressions",
+                "Mensuration",
+                "Exponents",
+                "Factorisation",
+                "Graphs"
+            ],
+
+            "વિજ્ઞાન (Science)": [
+
+                "Crop Production",
+                "Microorganisms",
+                "Synthetic Fibres",
+                "Metals and Non Metals",
+                "Coal and Petroleum",
+                "Combustion",
+                "Cell",
+                "Reproduction",
+                "Force and Pressure",
+                "Friction",
+                "Sound",
+                "Light"
+            ]
+        },
+
+        "Std 9": {
+
+            "ગણિત (Maths)": [
+
+                "Number Systems",
+                "Polynomials",
+                "Coordinate Geometry",
+                "Linear Equations",
+                "Euclid Geometry",
+                "Lines and Angles",
+                "Triangles",
+                "Quadrilaterals",
+                "Circles",
+                "Herons Formula",
+                "Surface Areas and Volumes",
+                "Statistics",
+                "Probability"
+            ],
+
+            "વિજ્ઞાન (Science)": [
+
+                "Matter Around Us",
+                "Pure Substances",
+                "Atoms and Molecules",
+                "Structure of Atom",
+                "Cell",
+                "Tissues",
+                "Motion",
+                "Force and Laws",
+                "Gravitation",
+                "Work and Energy",
+                "Sound",
+                "Natural Resources"
+            ]
+        },
+
+        "Std 10": {
+
+            "ગણિત (Maths)": [
+
+                "Real Numbers",
+                "Polynomials",
+                "Pair of Linear Equations",
+                "Quadratic Equations",
+                "Arithmetic Progressions",
+                "Triangles",
+                "Coordinate Geometry",
+                "Introduction to Trigonometry",
+                "Applications of Trigonometry",
+                "Circles",
+                "Areas Related to Circles",
+                "Surface Areas and Volumes",
+                "Statistics",
+                "Probability"
+            ],
+
+            "વિજ્ઞાન (Science)": [
+
+                "Chemical Reactions",
+                "Acids Bases and Salts",
+                "Metals and Non Metals",
+                "Carbon and Compounds",
+                "Periodic Classification",
+                "Life Processes",
+                "Control and Coordination",
+                "Reproduction",
+                "Heredity",
+                "Light Reflection",
+                "Human Eye",
+                "Electricity",
+                "Magnetic Effects",
+                "Energy Sources",
+                "Environment"
+            ]
+        }
     }
 
-# 📝 ધોરણ ૧૦ ના સાચા બોર્ડ લેવલના પ્રશ્નો (PYQ)
-if "real_questions" not in st.session_state:
-    st.session_state.real_questions = {
-        "Ch 1: રાસાયણિક પ્રક્રિયાઓ અને સમીકરણો": [
-            {"question": "મેગ્નેશિયમ પટ્ટીને હવામાં સળગાવતા પહેલાં શા માટે સાફ કરવામાં આવે છે? (PYQ)", "options": ["ભેજ દૂર કરવા", "નિષ્ક્રિય મેગ્નેશિયમ ઓક્સાઇડનું સ્તર દૂર કરવા", "ચળકાટ માટે", "કાર્બોનેટ સ્તર દૂર કરવા"], "answer": "નિષ્ક્રિય મેગ્નેશિયમ ઓક્સાઇડનું સ્તર દૂર કરવા"},
-            {"question": "કળી ચૂનાનું (Calcium Oxide) પાણી સાથે ભળવું એ કઈ પ્રક્રિયા છે? (PYQ)", "options": ["ઉષ્માશોષક", "ઉષ્માક્ષેપક", "વિઘટન", "દ્વિ-વિસ્થાપન"], "answer": "ઉષ્માક્ષેપક"}
-        ],
-        "Ch 2: એસિડ, બેઇઝ અને ક્ષાર": [
-            {"question": "કોઈ દ્રાવણ લાલ લિટમસ પત્રને ભૂરું બનાવે છે, તો તેની pH કેટલી હોઈ શકે? (PYQ)", "options": ["1", "4", "5", "10"], "answer": "10"},
-            {"question": "પ્લાસ્ટર ઓફ પેરિસ (POP) નું સાચું રાસાયણિક સૂત્ર કયું છે?", "options": ["CaSO₄ · 2H₂O", "CaSO₄ · ½H₂O", "CuSO₄ · 5H₂O"], "answer": "CaSO₄ · ½H₂O"}
-        ],
-        "Ch 2: બહુપદીઓ": [
-            {"question": "દ્વિઘાત બહુપદી x² + 7x + 10 ના શૂન્યોનો સરવાળો કેટલો થાય? (PYQ)", "options": ["7", "-7", "10", "-10"], "answer": "-7"}
-        ],
-        "Ch 1: વાસ્તવિક સંખ્યાઓ": [
-            {"question": "યુક્લિડની ભાગવિધિ મુજબ ગુ.સા.અ. શોધવાનું સૂત્ર કયું છે?", "options": ["a = bq + r", "a = b + q", "pv = nrt"], "answer": "a = bq + r"}
-        ],
-        "Ch 1: મોરલી": [
-            {"question": "'મોરલી' પદના કવયિત્રીનું નામ શું છે?", "options": ["મીરાંબાઈ", "ગંગાસતી", "પ્રેમાનંદ"], "answer": "મીરાંબાઈ"}
-        ],
-        "Ch 1: Against the Odds": [
-            {"question": "For how many years did the residents of Taj Nagar lobbied for a railway station?", "options": ["11 years", "25 years", "21 years"], "answer": "21 years"}
-        ]
-    }
+# =========================================================
+# 🤖 AI QUESTION GENERATOR
+# =========================================================
 
-def generate_infinite_question(chapter_name):
-    if "ગણિત" in chapter_name or "બહુપદીઓ" in chapter_name or "સંખ્યાઓ" in chapter_name:
-        a = random.randint(2, 9)
-        b = random.randint(2, 10)
+def generate_ai_question(std, subject, chapter):
+
+    prompt = f"""
+    Generate 1 Gujarati MCQ question.
+
+    Standard: {std}
+    Subject: {subject}
+    Chapter: {chapter}
+
+    Return EXACTLY like this:
+
+    QUESTION: ...
+    OPTION1: ...
+    OPTION2: ...
+    OPTION3: ...
+    OPTION4: ...
+    ANSWER: ...
+    """
+
+    try:
+
+        response = client.chat.completions.create(
+
+            model="llama3-70b-8192",
+
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+
+            temperature=0.8,
+            max_tokens=300
+        )
+
+        text = response.choices[0].message.content
+
+        lines = text.split("\n")
+
+        question = ""
+        options = []
+        answer = ""
+
+        for line in lines:
+
+            if line.startswith("QUESTION:"):
+
+                question = line.replace(
+                    "QUESTION:",
+                    ""
+                ).strip()
+
+            elif line.startswith("OPTION"):
+
+                options.append(
+                    line.split(":",1)[1].strip()
+                )
+
+            elif line.startswith("ANSWER:"):
+
+                answer = line.replace(
+                    "ANSWER:",
+                    ""
+                ).strip()
+
+        if len(options) < 4:
+
+            return None
+
         return {
-            "question": f"[MATH CHALLENGE] {chapter_name} મુજબ, {a} ગુણ્યા {b} નો સાચો જવાબ શું થાય?",
-            "options": [str(a*b), str(a*b+4), str(a*b-2), str(a+b)],
-            "answer": str(a*b)
-        }
-    else:
-        return {
-            "question": f"[REVISION RUN] {chapter_name} ના આ મહત્વના પ્રશ્ન માટે કયો વિકલ્પ સાચો છે?",
-            "options": ["સાચું વિધાન", "ખોટું વિધાન", "માહિતી અધૂરી છે"],
-            "answer": "સાચું વિધાન"
+
+            "question": question,
+            "options": options,
+            "answer": answer
         }
 
-# સેશન સ્ટેટ્સ સેટઅપ
-if "player_name" not in st.session_state: st.session_state.player_name = "Aayush"
-if "score" not in st.session_state: st.session_state.score = 100
-if "current_match_questions" not in st.session_state: st.session_state.current_match_questions = []
-if "match_index" not in st.session_state: st.session_state.match_index = 0
-if "game_mode" not in st.session_state: st.session_state.game_mode = "SETUP"
-if "ai_open" not in st.session_state: st.session_state.ai_open = False
+    except:
 
-# 🕹️ મેઈન ગેમ કન્ટેન્ટ
+        return None
+
+# =========================================================
+# 🏆 RANK SYSTEM
+# =========================================================
+
+def get_rank(score):
+
+    if score >= 500:
+        return "👑 MASTER"
+
+    elif score >= 300:
+        return "🔥 PRO"
+
+    elif score >= 150:
+        return "⚡ PLAYER"
+
+    return "🎮 BEGINNER"
+
+# =========================================================
+# 🎯 SESSION STATE
+# =========================================================
+
+if "player_name" not in st.session_state:
+    st.session_state.player_name = "Aayush"
+
+if "score" not in st.session_state:
+    st.session_state.score = 100
+
+if "game_mode" not in st.session_state:
+    st.session_state.game_mode = "SETUP"
+
+if "questions" not in st.session_state:
+    st.session_state.questions = []
+
+if "question_index" not in st.session_state:
+    st.session_state.question_index = 0
+
+if "ai_open" not in st.session_state:
+    st.session_state.ai_open = False
+
+# =========================================================
+# 🎮 TITLE
+# =========================================================
+
+st.markdown(
+    "<h1>🎮 CHANAKYA AI GAME 🎮</h1>",
+    unsafe_allow_html=True
+)
+
+# =========================================================
+# 🎮 GAME SETUP
+# =========================================================
+
 if st.session_state.game_mode == "SETUP":
-    st.subheader("⚙️ ગેમ સેટઅપ લોબી")
-    
-    name_input = st.text_input("✍️ તમારું નામ લખો:", value=st.session_state.player_name)
-    if name_input:
-        st.session_state.player_name = name_input.strip()
-        
-    std_list = list(st.session_state.base_db.keys())
-    selected_std = st.selectbox("🎯 ધોરણ પસંદ કરો (Std 1 to 12):", std_list, index=std_list.index("Std 10") if "Std 10" in std_list else 0)
-    
-    sub_list = list(st.session_state.base_db[selected_std].keys())
-    selected_sub = st.selectbox("📚 વિષય (Subjects) પસંદ કરો:", sub_list)
-    
-    ch_list = st.session_state.base_db[selected_std][selected_sub]
-    selected_ch = st.selectbox("📖 પ્રકરણ (Chapters) પસંદ કરો:", ch_list)
-    
-    quiz_limit = st.selectbox("📊 આ મેચમાં કેટલા પ્રશ્નો રમવા છે?", [10, 20, 50, 100])
-    
-    if st.button(f"🎮 ગેમ સ્ટાર્ટ કરો, {st.session_state.player_name}!"):
-        final_set = []
-        if selected_ch in st.session_state.real_questions:
-            final_set = list(st.session_state.real_questions[selected_ch])
-            random.shuffle(final_set)
-        
-        while len(final_set) < quiz_limit:
-            new_q = generate_infinite_question(selected_ch)
-            if new_q["question"] not in [q["question"] for q in final_set]: final_set.append(new_q)
-        
-        st.session_state.current_match_questions = final_set[:quiz_limit]
-        st.session_state.match_index = 0
+
+    st.subheader("⚙️ GAME LOBBY")
+
+    st.session_state.player_name = st.text_input(
+        "✍️ નામ લખો:",
+        value=st.session_state.player_name
+    )
+
+    std = st.selectbox(
+        "🎯 ધોરણ",
+        list(st.session_state.base_db.keys())
+    )
+
+    subject = st.selectbox(
+        "📚 વિષય",
+        list(st.session_state.base_db[std].keys())
+    )
+
+    chapter = st.selectbox(
+        "📖 પ્રકરણ",
+        st.session_state.base_db[std][subject]
+    )
+
+    total_questions = st.selectbox(
+        "📊 પ્રશ્નો",
+        [10,20,50]
+    )
+
+    if st.button("🚀 START GAME"):
+
+        questions = []
+
+        with st.spinner("🧠 AI પ્રશ્નો બનાવી રહ્યું છે..."):
+
+            while len(questions) < total_questions:
+
+                q = generate_ai_question(
+                    std,
+                    subject,
+                    chapter
+                )
+
+                if q is not None:
+
+                    questions.append(q)
+
+        random.shuffle(questions)
+
+        st.session_state.questions = questions
+
+        st.session_state.question_index = 0
+
         st.session_state.score = 100
-        st.session_state.game_mode = "PLAYING"
+
+        st.session_state.game_mode = "PLAY"
+
         st.rerun()
 
-elif st.session_state.game_mode == "PLAYING":
-    st.subheader(f"🕹️ બેટલ ગ્રાઉન્ડ - {st.session_state.player_name}")
-    
+# =========================================================
+# 🎮 PLAY MODE
+# =========================================================
+
+elif st.session_state.game_mode == "PLAY":
+
+    st.subheader(
+        f"🕹️ PLAYER: {st.session_state.player_name}"
+    )
+
+    st.info(
+        f"🏆 Rank: {get_rank(st.session_state.score)}"
+    )
+
+    st.markdown(
+        f"### 🎯 Score: {st.session_state.score}"
+    )
+
+    index = st.session_state.question_index
+
+    total = len(st.session_state.questions)
+
+    st.progress((index + 1) / total)
+
     if st.session_state.score <= 0:
-        st.error(f"💥 GAME OVER {st.session_state.player_name}! તમારા પોઈન્ટ્સ 0 થઈ ગયા.")
-        if st.button("🔄 લોબીમાં પાછા ફરો", key="lobby_back_btn"):
+
+        autoplay_audio("sounds/gameover.mp3")
+
+        st.error("💀 GAME OVER")
+
+        if st.button("🔄 Restart"):
+
             st.session_state.game_mode = "SETUP"
-            st.session_state.score = 100
-            st.session_state.match_index = 0
-            st.session_state.current_match_questions = []
+
             st.rerun()
-    else:
-        idx = st.session_state.match_index
-        total_q = len(st.session_state.current_match_questions)
-        if idx < total_q:
-            current_q = st.session_state.current_match_questions[idx]
-            st.markdown(f"#### 🎯 સ્કોર: <span style='color:#00ffff'>{st.session_state.score}</span>")
-            st.write(f"📊 પ્રશ્ન પ્રોગ્રેસ: **{idx + 1} / {total_q}**")
-            st.subheader(current_q["question"])
-            
-            user_choice = st.radio("સાચો વિકલ્પ પસંદ કરો:", current_q["options"], index=None, key=f"inf_q_{idx}")
-            if user_choice is not None:
-                if user_choice == current_q["answer"]:
+
+    elif index < total:
+
+        q = st.session_state.questions[index]
+
+        st.markdown(f"""
+        <div class="question-card">
+        <h3>{q['question']}</h3>
+        </div>
+        """, unsafe_allow_html=True)
+
+        user_answer = st.radio(
+            "સાચો જવાબ પસંદ કરો:",
+            q["options"],
+            key=f"q_{index}"
+        )
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+
+            if st.button("✅ Submit"):
+
+                if user_answer == q["answer"]:
+
+                    autoplay_audio("sounds/correct.mp3")
+
+                    st.success("🎯 સાચો જવાબ! +10")
+
                     st.session_state.score += 10
-                    st.toast(f"🎯 જોરદાર જવાબ! +10", icon="✅")
-                    st.session_state.match_index += 1
+
                 else:
+
+                    autoplay_audio("sounds/wrong.mp3")
+
+                    st.error(
+                        f"❌ ખોટો જવાબ!\n\nસાચો જવાબ: {q['answer']}"
+                    )
+
                     st.session_state.score -= 50
-                st.rerun()
-        else:
-            st.balloons()
-            st.success(f"🎉 વિજેતા {st.session_state.player_name}! તમે આખી ચેલેન્જ પાર કરી લીધી!")
-            if st.button("🏁 નવો રેકોર્ડ સેટ કરો", key="reset_match_btn"):
-                st.session_state.game_mode = "SETUP"
+
+                st.session_state.question_index += 1
+
                 st.rerun()
 
-# 🧠 --- ચાણક્ય AI બટન અને પોપઅપ જે રાઇટ સાઇડ સેટ થઈ ગયું છે ---
+        with col2:
+
+            if st.button("🧠 Explain"):
+
+                explanation = ask_chanakya_ai(f"""
+
+                પ્રશ્ન:
+                {q['question']}
+
+                સાચો જવાબ:
+                {q['answer']}
+
+                ગુજરાતીમાં સમજાવો.
+                """)
+
+                st.info(explanation)
+
+    else:
+
+        autoplay_audio("sounds/win.mp3")
+
+        st.balloons()
+
+        st.success(
+            f"🏆 CONGRATULATIONS {st.session_state.player_name}"
+        )
+
+        if st.button("🏁 PLAY AGAIN"):
+
+            st.session_state.game_mode = "SETUP"
+
+            st.rerun()
+
+# =========================================================
+# 🧠 AI CHAT
+# =========================================================
+
 st.write("---")
-col_space, col_btn = st.columns([2.8, 1.2])
 
-with col_btn:
-    if st.button("🧠 ચાણક્ય AI ઓપન / ક્લોઝ", key="chanakya_fixed_btn"):
-        st.session_state.ai_open = not st.session_state.ai_open
-        st.rerun()
+if st.button("🧠 OPEN / CLOSE AI"):
+
+    st.session_state.ai_open = not st.session_state.ai_open
+
+    st.rerun()
 
 if st.session_state.ai_open:
-    st.markdown("<div class='ai-popup-box'>", unsafe_allow_html=True)
-    st.subheader("🧠 ચાણક્ય AI")
-    if "study_chat_history" not in st.session_state: st.session_state.study_chat_history = []
-    if not st.session_state.study_chat_history:
-        st.session_state.study_chat_history.append({"role": "assistant", "message": f"પ્રણામ {st.session_state.player_name} ભાઈ! હું ચાણક્ય AI છું. ભણવાનો કોઈ પણ પ્રશ્ન અહીં પૂછો!"})
-    for chat in st.session_state.study_chat_history:
-        with st.chat_message(chat["role"]): st.write(chat["message"])
-    if study_msg := st.chat_input("અહીં સવાલ પૂછો..."):
-        st.session_state.study_chat_history.append({"role": "user", "message": study_msg})
-        reply = f"ખૂબ જ ઉત્તમ પ્રશ્ન {st.session_state.player_name} ભાઈ! હું આ વિષયને પાકો કરવામાં તમારી પૂરી મદદ કરીશ."
-        st.session_state.study_chat_history.append({"role": "assistant", "message": reply})
+
+    st.markdown(
+        "<div class='ai-box'>",
+        unsafe_allow_html=True
+    )
+
+    st.subheader("🧠 CHANAKYA AI")
+
+    if "chat_history" not in st.session_state:
+
+        st.session_state.chat_history = []
+
+    for chat in st.session_state.chat_history:
+
+        with st.chat_message(chat["role"]):
+
+            st.write(chat["message"])
+
+    user_msg = st.chat_input("અહીં પ્રશ્ન પૂછો...")
+
+    if user_msg:
+
+        st.session_state.chat_history.append({
+
+            "role": "user",
+            "message": user_msg
+        })
+
+        reply = ask_chanakya_ai(user_msg)
+
+        st.session_state.chat_history.append({
+
+            "role": "assistant",
+            "message": reply
+        })
+
         st.rerun()
+
     st.markdown("</div>", unsafe_allow_html=True)
