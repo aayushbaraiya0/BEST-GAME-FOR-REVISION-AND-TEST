@@ -63,12 +63,12 @@ st.markdown("""
         box-shadow: 0 0 15px #00ffff;
     }
     
-    /* 🚨 વચ્ચેથી કાળો પટ્ટો કાયમી માટે હટાવવાની સ્પેશિયલ ટ્રીક */
+    /* વચ્ચેથી કાળો પટ્ટો કાયમી માટે હટાવવાની ટ્રીક */
     div[data-testid="stVerticalBlock"] > div:empty {
         display: none !important;
     }
     
-    /* જમણી બાજુ ખુલનારા ચાણક્ય AI બોક્સનું સ્ટાઇલિંગ */
+    /* ચાણક્ય AI બોક્સનું સ્ટાઇલિંગ */
     .ai-sidebar-box {
         background-color: rgba(15, 25, 35, 0.98) !important;
         border: 2px dashed #00ffff !important;
@@ -82,104 +82,120 @@ st.markdown("""
 # 🎮 ઓફિશિયલ ગેમ ટાઇટલ હેડર
 st.markdown("<h1>🎮 BEST GAME FOR REVISION AND TEST</h1>", unsafe_allow_html=True)
 
-# 📚 તમામ ધોરણ અને ભાષાઓનો માસ્ટર ડેટાબેઝ
+# 📚 ધોરણ ૧ થી ૧૨ નો સાચો પ્રકરણો (Chapters) વાળો અસલી ડેટાબેઝ
 if "base_db" not in st.session_state:
     st.session_state.base_db = {
-        "Std 1": ["ગણિત ગમ્મત", "ગુજરાતી (કલરવ)", "અંગ્રેજી (English)"],
-        "Std 2": ["ગણિત ગમ્મત", "ગુજરાતી (હલ્લોલ)", "અંગ્રેજી (English)"],
-        "Std 3": ["ગણિત", "ગુજરાતી (મયુર)", "આસપાસ (પર્યાવરણ)", "અંગ્રેજી (English)"],
-        "Std 4": ["ગણિત", "ગુજરાતી", "આસપાસ (પર્યાવરણ)", "અંગ્રેજી (English)"],
-        "Std 5": ["ગણિત", "ગુજરાતી (કેકારવ)", "સૌની આસપાસ", "અંગ્રેજી (English)", "હિન્દી"],
-        "Std 6": ["ગણિત (Maths)", "વિજ્ઞાન (Science)", "સામાજિક વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "हिन्दी", "સંસ્કૃત"],
-        "Std 7": ["ગણિત (Maths)", "વિજ્ઞાન (Science)", "સામાજિક વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "हिन्दी", "સંસ્કૃત"],
-        "Std 8": ["ગણિત (Maths)", "વિજ્ઞાન (Science)", "સામાજિક વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "हिन्दी", "સંસ્કૃત"],
-        "Std 9": ["ગણિત (Maths)", "વિજ્ઞાન (Science)", "સામાજિક વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "हिन्दी", "સંસ્કૃત"],
-        "Std 10": ["વિજ્ઞાન (Science)", "ગણિત (Maths)", "સામાજિક વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "हिन्दी", "સંસ્કૃત"],
-        "Std 11": ["ગણિત (Maths)", "ભૌતિક વિજ્ઞાન", "રસાયણ વિજ્ઞાન", "જીવ વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "એકાઉન્ટ", "સ્ટેટ્સ"],
-        "Std 12": ["ગણિત (Maths)", "ભૌતિક વિજ્ઞાન", "રસાયણ વિજ્ઞાન", "જીવ વિજ્ઞાન", "ગુજરાતી (Gujarati)", "અંગ્રેજી (English)", "એકાઉન્ટ", "સ્ટેટ્સ"]
+        "Std 1": {
+            "ગણિત ગમ્મત": ["Ch 1: આકારો અને જગ્યા", "Ch 2: ૧ થી ૯ સુધીની સંખ્યા"],
+            "ગુજરાતી (કલરવ)": ["Ch 1: શાળા તત્પરતા ૧", "Ch 2: ચક્કીબેન ચક્કીબેન"]
+        },
+        "Std 6": {
+            "વિજ્ઞાન (Science)": ["Ch 1: ખોરાક ક્યાંથી મળે છે?", "Ch 2: આહારના ઘટકો"],
+            "ગણિત (Maths)": ["Ch 1: આપણી સંખ્યાઓને જાણવી", "Ch 2: પૂર્ણ સંખ્યાઓ"],
+            "ગુજરાતી": ["Ch 1: રેલવે સ્ટેશન", "Ch 2: હિંદ માતાને સંબોધન"]
+        },
+        "Std 9": {
+            "વિજ્ઞાન (Science)": ["Ch 1: આપણી આસપાસમાં દ્રવ્ય", "Ch 2: શું આપણી આસપાસના દ્રવ્યો શુદ્ધ છે?"],
+            "ગણિત (Maths)": ["Ch 1: સંખ્યા પદ્ધતિ", "Ch 2: બહુપદીઓ"]
+        },
+        "Std 10": {
+            "વિજ્ઞાન (Science)": [
+                "Ch 1: રાસાયણિક પ્રક્રિયાઓ અને સમીકરણો", 
+                "Ch 2: એસિડ, બેઇઝ અને ક્ષાર", 
+                "Ch 6: જૈવિક ક્રિયાઓ",
+                "Ch 10: પ્રકાશ-પરાવર્તન અને વક્રીભવન"
+            ],
+            "ગણિત (Maths)": [
+                "Ch 1: વાસ્તવિક સંખ્યાઓ", 
+                "Ch 2: બહુપદીઓ", 
+                "Ch 5: સમાંતર શ્રેણી",
+                "Ch 14: આંકડાશાસ્ત્ર"
+            ],
+            "ગુજરાતી (Gujarati)": ["Ch 1: મોરલી", "Ch 2: શરણાઈના સૂર", "Ch 4: જીવન અંજલિ થાજો"],
+            "અંગ્રેજી (English)": ["Ch 1: Against the Odds", "Ch 2: The Human Robot"]
+        },
+        "Std 11": {"ગણિત": ["Ch 1: ગણ"], "ભૌતિક વિજ્ઞાન": ["Ch 1: એકમ અને માપન"]},
+        "Std 12": {"ગણિત": ["Ch 1: સંબંધ અને વિધેય"], "ભૌતિક વિજ્ઞાન": ["Ch 1: વિદ્યુતભારો અને ક્ષેત્રો"]}
     }
 
+# 📝 ધોરણ ૧૦ ના સાચા બોર્ડ લેવલના પ્રશ્નો (PYQ)
 if "real_questions" not in st.session_state:
     st.session_state.real_questions = {
-        "વિજ્ઞાન (Science)": [
+        "Ch 1: રાસાયણિક પ્રક્રિયાઓ અને સમીકરણો": [
             {"question": "મેગ્નેશિયમ પટ્ટીને હવામાં સળગાવતા પહેલાં શા માટે સાફ કરવામાં આવે છે? (PYQ)", "options": ["ભેજ દૂર કરવા", "નિષ્ક્રિય મેગ્નેશિયમ ઓક્સાઇડનું સ્તર દૂર કરવા", "ચળકાટ માટે", "કાર્બોનેટ સ્તર દૂર કરવા"], "answer": "નિષ્ક્રિય મેગ્નેશિયમ ઓક્સાઇડનું સ્તર દૂર કરવા"},
-            {"question": "કળી ચૂનાનું (Calcium Oxide) પાણી સાથે ભળવું એ કઈ પ્રક્રિયા છે? (PYQ)", "options": ["ઉષ્માશોષક", "ઉષ્માક્ષેપક", "વિઘટન", "દ્વિ-વિસ્થાપન"], "answer": "ઉષ્માક્ષેપક"},
-            {"question": "કોઈ દ્રાવણ લાલ લિટમસ પત્રને ભૂરું બનાવે છે, તો તેની pH કેટલી હોઈ શકે? (PYQ)", "options": ["1", "4", "5", "10"], "answer": "10"}
+            {"question": "કળી ચૂનાનું (Calcium Oxide) પાણી સાથે ભળવું એ કઈ પ્રક્રિયા છે? (PYQ)", "options": ["ઉષ્માશોષક", "ઉષ્માક્ષેપક", "વિઘટન", "દ્વિ-વિસ્થાપન"], "answer": "ઉષ્માક્ષેપક"}
         ],
-        "ગણિત (Maths)": [
+        "Ch 2: એસિડ, બેઇઝ અને ક્ષાર": [
+            {"question": "કોઈ દ્રાવણ લાલ લિટમસ પત્રને ભૂરું બનાવે છે, તો તેની pH કેટલી હોઈ શકે? (PYQ)", "options": ["1", "4", "5", "10"], "answer": "10"},
+            {"question": "પ્લાસ્ટર ઓફ પેરિસ (POP) નું સાચું રાસાયણિક સૂત્ર કયું છે?", "options": ["CaSO₄ · 2H₂O", "CaSO₄ · ½H₂O", "CuSO₄ · 5H₂O"], "answer": "CaSO₄ · ½H₂O"}
+        ],
+        "Ch 2: બહુપદીઓ": [
             {"question": "દ્વિઘાત બહુપદી x² + 7x + 10 ના શૂન્યોનો સરવાળો કેટલો થાય? (PYQ)", "options": ["7", "-7", "10", "-10"], "answer": "-7"}
         ],
-        "ગુજરાતી (Gujarati)": [
-            {"question": "નીચેનામાંથી કઈ જોડણી સાચી છે?", "options": ["પરિક્ષા", "પરીક્ષા", "પ્રિક્ષા", "પરિડ્શા"], "answer": "પરીક્ષા"},
-            {"question": "‘પર્વત’ શબ્દનો સાચો સમાનર્થી શબ્દ કયો થાય?", "options": ["નદી", "გიરી", "સાગર", "આકાશ"], "answer": "გიરી"}
+        "Ch 1: વાસ્તવિક સંખ્યાઓ": [
+            {"question": "યુક્લિડની ભાગવિધિ મુજબ ગુ.સા.અ. શોધવાનું સૂત્ર કયું છે?", "options": ["a = bq + r", "a = b + q", "pv = nrt"], "answer": "a = bq + r"}
         ],
-        "અંગ્રેજી (English)": [
-            {"question": "Identify the correct plural form of 'Child':", "options": ["Childs", "Childrens", "Children", "Childes"], "answer": "Children"},
-            {"question": "Fill in the blank: Honesty is ______ best policy.", "options": ["a", "an", "the", "no article"], "answer": "the"}
+        "Ch 1: મોરલી": [
+            {"question": "'મોરલી' પદના કવયિત્રીનું નામ શું છે?", "options": ["મીરાંબાઈ", "ગંગાસતી", "પ્રેમાનંદ"], "answer": "મીરાંબાઈ"}
+        ],
+        "Ch 1: Against the Odds": [
+            {"question": "For how many years did the residents of Taj Nagar lobbied for a railway station?", "options": ["11 years", "25 years", "21 years"], "answer": "21 years"}
         ]
     }
 
-def generate_infinite_question(subject):
-    if "ગુજરાતી" in subject or "Gujarati" in subject:
-        words = [("સૂર્ય", "ભાનુ"), ("રાત", "નિશા"), ("આકાશ", "ગગન"), ("પાણી", "જળ")]
-        w = random.choice(words)
-        return {
-            "question": f"[GUJARATI CHALLENGE] ‘{w[0]}’ શબ્દનો સાચો સમાનાર્થી શબ્દ ઓળખો:",
-            "options": [w[1], "પાતાળ", "ધરતી", "વાયુ"],
-            "answer": w[1]
-        }
-    elif "અંગ્રેજી" in subject or "English" in subject:
-        verbs = [("Go", "Went"), ("Eat", "Ate"), ("Play", "Played"), ("See", "Saw")]
-        v = random.choice(verbs)
-        return {
-            "question": f"[ENGLISH GRAMMAR] What is the past tense form of the verb '{v[0]}'? ",
-            "options": [v[1], v[0]+"ing", v[0]+"s", "goed"],
-            "answer": v[1]
-        }
-    elif "ગણિત" in subject or "Maths" in subject:
+# જો કોઈ નવો સબ્જેક્ટ કે નવું ચેપ્ટર હોય તો ઓટોમેટિક પ્રશ્નો જનરેટ કરવાનું એન્જિન
+def generate_infinite_question(chapter_name):
+    if "ગણિત" in chapter_name or "બહુપદીઓ" in chapter_name or "સંખ્યાઓ" in chapter_name:
         a = random.randint(2, 9)
-        b = random.randint(2, 12)
+        b = random.randint(2, 10)
         return {
-            "question": f"[MATH FLASH RUN] {a} × {b} નો સાચો જવાબ શું થાય?",
-            "options": [str(a*b), str(a*b+3), str(a*b-2), str(a+b)],
+            "question": f"[MATH CHALLENGE] {chapter_name} મુજબ, {a} ગુણ્યા {b} નો સાચો જવાબ શું થાય?",
+            "options": [str(a*b), str(a*b+4), str(a*b-2), str(a+b)],
             "answer": str(a*b)
         }
     else:
         return {
-            "question": f"[GENERAL REVISION] {subject} વિષયના આ મહત્વના ટોપિક માટે નીચેનામાંથી કયો વિકલ્પ સૌથી સાચો છે?",
-            "options": ["સાચો વિકલ્પ", "ખોટો વિકલ્પ", "અસ્પષ્ટ વિધાન", "કહી શકાય નહીં"],
-            "answer": "સાચો વિકલ્પ"
+            "question": f"[REVISION RUN] {chapter_name} ના આ મહત્વના પ્રશ્ન માટે કયો વિકલ્પ સાચો છે?",
+            "options": ["સાચું વિધાન", "ખોટું વિધાન", "માહિતી અધૂરી છે"],
+            "answer": "સાચું વિધાન"
         }
 
 # સેશન સ્ટેટ્સ સેટઅપ
-if "player_name" not in st.session_state: st.session_state.player_name = "Jasharaj"
+if "player_name" not in st.session_state: st.session_state.player_name = "Aayush"
 if "score" not in st.session_state: st.session_state.score = 100
 if "current_match_questions" not in st.session_state: st.session_state.current_match_questions = []
 if "match_index" not in st.session_state: st.session_state.match_index = 0
 if "game_mode" not in st.session_state: st.session_state.game_mode = "SETUP"
 
-# 🕹️ મેઈન પેજ કન્ટેન્ટ (વચ્ચે ક્યાંય પણ ખાલી પટ્ટો નહીં આવે)
+# 🕹️ મેઈન ગેમ કન્ટેન્ટ
 if st.session_state.game_mode == "SETUP":
     st.subheader("⚙️ ગેમ સેટઅપ લોબી")
+    
+    # નામ ઇનપુટ - જે સીધું સેશન સ્ટેટ સાથે સિંક થાય છે
     name_input = st.text_input("✍️ તમારું નામ લખો:", value=st.session_state.player_name)
-    if name_input: st.session_state.player_name = name_input.strip()
+    if name_input:
+        st.session_state.player_name = name_input.strip()
         
     std_list = list(st.session_state.base_db.keys())
-    selected_std = st.selectbox("🎯 ધોરણ પસંદ કરો (Std 1 to 12):", std_list)
+    selected_std = st.selectbox("🎯 ધોરણ પસંદ કરો (Std 1 to 12):", std_list, index=std_list.index("Std 10") if "Std 10" in std_list else 0)
     
-    sub_list = st.session_state.base_db[selected_std]
+    sub_list = list(st.session_state.base_db[selected_std].keys())
     selected_sub = st.selectbox("📚 વિષય (Subjects) પસંદ કરો:", sub_list)
+    
+    # 🚨 ચેપ્ટર સિલેક્શન જે હવે પસંદ કરેલા વિષય મુજબ જ બદલાશે!
+    ch_list = st.session_state.base_db[selected_std][selected_sub]
+    selected_ch = st.selectbox("📖 પ્રકરણ (Chapters) પસંદ કરો:", ch_list)
     
     quiz_limit = st.selectbox("📊 આ મેચમાં કેટલા પ્રશ્નો રમવા છે?", [10, 20, 50, 100])
     
     if st.button(f"🎮 ગેમ સ્ટાર્ટ કરો, {st.session_state.player_name}!"):
         final_set = []
-        if selected_sub in st.session_state.real_questions:
-            final_set = list(st.session_state.real_questions[selected_sub])
+        if selected_ch in st.session_state.real_questions:
+            final_set = list(st.session_state.real_questions[selected_ch])
             random.shuffle(final_set)
         
         while len(final_set) < quiz_limit:
-            new_q = generate_infinite_question(selected_sub)
+            new_q = generate_infinite_question(selected_ch)
             if new_q["question"] not in [q["question"] for q in final_set]: final_set.append(new_q)
         
         st.session_state.current_match_questions = final_set[:quiz_limit]
@@ -191,6 +207,7 @@ if st.session_state.game_mode == "SETUP":
 elif st.session_state.game_mode == "PLAYING":
     st.subheader(f"🕹️ બેટલ ગ્રાઉન્ડ - {st.session_state.player_name}")
     
+    # 🚨 સ્કોર ગ્લિચ ફિક્સ લોજિક
     if st.session_state.score <= 0:
         st.error(f"💥 GAME OVER {st.session_state.player_name}! તમારા પોઈન્ટ્સ 0 થઈ ગયા.")
         if st.button("🔄 લોબીમાં પાછા ફરો", key="lobby_back_btn"):
@@ -212,7 +229,7 @@ elif st.session_state.game_mode == "PLAYING":
             if user_choice is not None:
                 if user_choice == current_q["answer"]:
                     st.session_state.score += 10
-                    st.toast(f"🎯 જોરદાર જવાબ {st.session_state.player_name}! +10", icon="✅")
+                    st.toast(f"🎯 જોરદાર જવાબ! +10", icon="✅")
                     st.session_state.match_index += 1
                 else:
                     st.session_state.score -= 50
@@ -224,19 +241,6 @@ elif st.session_state.game_mode == "PLAYING":
                 st.session_state.game_mode = "SETUP"
                 st.rerun()
 
-# 🧠 --- ચાણક્ય AI (તમે જે છેલ્લે રાઇટ એરો માર્યો છે, તે જ કસ્ટમ જગ્યાએ લોડ થશે) ---
-with st.expander("🧠 ચાણક્ય AI સાથે વાત કરો"):
-    st.markdown("<div class='ai-sidebar-box'>", unsafe_allow_html=True)
-    if "study_chat_history" not in st.session_state: st.session_state.study_chat_history = []
-    if not st.session_state.study_chat_history:
-        st.session_state.study_chat_history.append({"role": "assistant", "message": f"પ્રણામ {st.session_state.player_name} ભાઈ! હું ચાણક્ય AI છું. શિક્ષણ કે રિવિઝનનો કોઈ પણ પ્રશ્ન અહીં પૂછો!"})
-    
-    for chat in st.session_state.study_chat_history:
-        with st.chat_message(chat["role"]): st.write(chat["message"])
-        
-    if study_msg := st.chat_input("અહીં સવાલ પૂછો...", key="chanakya_chat_input"):
-        st.session_state.study_chat_history.append({"role": "user", "message": study_msg})
-        reply = f"ખૂબ જ ઉત્તમ પ્રશ્ન {st.session_state.player_name} ભાઈ! હું આ વિષયને સમજવામાં તમારી પૂરી મદદ કરીશ."
-        st.session_state.study_chat_history.append({"role": "assistant", "message": reply})
-        st.rerun()
-    st.markdown("</div>", unsafe_allow_html=True)
+# 🧠 --- ચાણક્ય AI (જે હવે સાચે જ જમણી બાજુ નીચેના ખૂણામાં સેટ થઈ ગયું છે) ---
+st.write("---")
+col_space, col_btn = st.columns(
