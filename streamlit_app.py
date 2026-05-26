@@ -1,218 +1,339 @@
+```python
 import streamlit as st
 import random
-from groq import Groq
+import sqlite3
+import json
+import os
+import time
 
-# layout="centered" કરવાથી આખી ગેમ સ્ક્રીનની વચ્ચે એકદમ નાની અને સ્લિમ થઈ જશે
-st.set_page_config(page_title="Best Game for Revision and Test", page_icon="🎮", layout="centered")
+# ---------------- PAGE CONFIG ----------------
+st.set_page_config(
+    page_title="ગુજરાતી એક્ઝામ ગેમ",
+    page_icon="🎮",
+    layout="centered"
+)
 
-# શાનદાર પ્યોર RGB અને સુપર સ્લિમ ગેમિંગ થીમ (બધી એરર ફિક્સ)
+# ---------------- DATABASE ----------------
+conn = sqlite3.connect("leaderboard.db", check_same_thread=False)
+c = conn.cursor()
+
+c.execute("""
+CREATE TABLE IF NOT EXISTS scores (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    score INTEGER,
+    standard TEXT,
+    subject TEXT
+)
+""")
+
+conn.commit()
+
+# ---------------- CSS ----------------
 st.markdown("""
-    <style>
-    .stApp {
-        background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #1de840, #1ddde8, #2b1de8, #dd00ff, #dd00ff);
-        background-size: 1600% 1600%;
-        animation: RGB-Animation 14s ease infinite;
-    }
-    @keyframes RGB-Animation {
-        0%{background-position:0% 82%}
-        50%{background-position:100% 19%}
-        100%{background-position:0% 82%}
-    }
-    .stRadio, .stMarkdown, .stSelectbox, .stTextInput {
-        background-color: rgba(10, 10, 15, 0.94) !important;
-        padding: 12px 16px !important;
-        border-radius: 10px !important;
-        color: #ffffff !important;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
-        border: 1px solid #00ffff !important;
-        margin-bottom: 8px !important;
-    }
-    label[data-testid="stWidgetLabel"], div[data-testid="stRadio"] label, p, span {
-        color: #ffffff !important;
-        font-size: 14px !important;
-    }
-    h1 {
-        color: #00ffff !important;
-        text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
-        text-align: center;
-        font-size: 24px !important;
-        margin-bottom: 15px !important;
-    }
-    h2, h3 {
-        color: #00ffff !important;
-        font-size: 18px !important;
-    }
-    input { 
-        color: #000000 !important; 
-        font-weight: bold !important;
-        height: 35px !important;
-    }
-    .stButton>button {
-        background-color: rgba(10, 10, 15, 0.95) !important;
-        color: #00ffff !important;
-        border: 1px solid #00ffff !important;
-        font-weight: bold !important;
-        border-radius: 8px !important;
-        width: 100% !important;
-    }
-    .stButton>button:hover {
-        background-color: #00ffff !important;
-        color: #000000 !important;
-        box-shadow: 0 0 15px #00ffff;
-    }
-    div[data-testid="stVerticalBlock"] > div:empty {
-        display: none !important;
-    }
-    .ai-sidebar-box {
-        background-color: rgba(15, 25, 35, 0.98) !important;
-        border: 2px dashed #00ffff !important;
-        padding: 12px;
-        border-radius: 8px;
-        margin-top: 10px;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+<style>
 
-# 🎮 ઓફિશિયલ ગેમ ટાઇટલ હેડર
-st.markdown("<h1>🎮 BEST GAME FOR REVISION AND TEST</h1>", unsafe_allow_html=True)
+.stApp{
+    background: linear-gradient(135deg,#050816,#0b1633,#111c44);
+    color:white;
+}
 
-# 📚 ધોરણ ૧ થી ૧૨ નો માસ્ટર ડેટાબેઝ
-if "base_db" not in st.session_state:
-    st.session_state.base_db = {
-        "Std 1": {
-            "ગણિત ગમ્મત": ["Ch 1: આકારો અને જગ્યા", "Ch 2: ૧ થી ૯ સુધીની સંખ્યા"],
-            "ગુજરાતી (કલરવ)": ["Ch 1: શાળા તત્પરતા ૧", "Ch 2: ચક્કીબેન ચક્કીબેન"]
-        },
-        "Std 6": {
-            "વિજ્ઞાન (Science)": ["Ch 1: ખોરાક ક્યાંથી મળે છે?", "Ch 2: આહારના ઘટકો"],
-            "ગણિત (Maths)": ["Ch 1: આપણી સંખ્યાઓને જાણવી", "Ch 2: પૂર્ણ સંખ્યાઓ"],
-            "ગુજરાતી": ["Ch 1: રેલવે સ્ટેશન", "Ch 2: હિંદ માતાને સંબોધન"]
-        },
-        "Std 9": {
-            "વિજ્ઞાન (Science)": ["Ch 1: આપણી આસપાસમાં દ્રવ્ય", "Ch 2: શું આપણી આસપાસના દ્રવ્યો શુદ્ધ છે?"],
-            "ગણિત (Maths)": ["Ch 1: સંખ્યા પદ્ધતિ", "Ch 2: બહુપદીઓ"]
-        },
-        "Std 10": {
-            "વિજ્ઞાન (Science)": [
-                "Ch 1: રાસાયણિક પ્રક્રિયાઓ અને સમીકરણો", 
-                "Ch 2: એસિડ, બેઇઝ અને ક્ષાર", 
-                "Ch 6: જૈવિક ક્રિયાઓ",
-                "Ch 10: પ્રકાશ-પરાવર્તન અને વક્રીભવન"
-            ],
-            "ગણિત (Maths)": [
-                "Ch 1: વાસ્તવિક સંખ્યાઓ", 
-                "Ch 2: બહુપદીઓ", 
-                "Ch 5: સમાંતર શ્રેણી",
-                "Ch 14: આંકડાશાસ્ત્ર"
-            ],
-            "ગુજરાતી (Gujarati)": ["Ch 1: મોરલી", "Ch 2: શરણાઈના સૂર", "Ch 4: જીવન અંજલિ થાજો"],
-            "અંગ્રેજી (English)": ["Ch 1: Against the Odds", "Ch 2: The Human Robot"]
-        }
-    }
+.title{
+    text-align:center;
+    font-size:45px;
+    font-weight:bold;
+    color:#00ffe7;
+    text-shadow:0px 0px 20px #00ffe7;
+    margin-bottom:20px;
+}
 
-if "real_questions" not in st.session_state:
-    st.session_state.real_questions = {
-        "Ch 1: રાસાયણિક પ્રક્રિયાઓ અને સમીકરણો": [
-            {"question": "મેગ્નેશિયમ પટ્ટીને હવામાં સળગાવતા પહેલાં શા માટે સાફ કરવામાં આવે છે? (PYQ)", "options": ["ભેજ દૂર કરવા", "નિષ્ક્રિય મેગ્નેશિયમ ઓક્સાઇડનું સ્તર દૂર કરવા", "ચળકાટ માટે", "કાર્બોનેટ સ્તર દૂર કરવા"], "answer": "નિષ્ક્રિય મેગ્નેશિયમ ઓક્સાઇડનું સ્તર દૂર કરવા"},
-            {"question": "કળી ચૂનાનું (Calcium Oxide) પાણી સાથે ભળવું એ કઈ પ્રક્રિયા છે? (PYQ)", "options": ["ઉષ્માશોષક", "ઉષ્માક્ષેપક", "વિઘટન", "દ્વિ-વિસ્થાપન"], "answer": "ઉષ્માક્ષેપક"}
+.box{
+    background:rgba(255,255,255,0.07);
+    padding:20px;
+    border-radius:20px;
+    border:1px solid rgba(255,255,255,0.1);
+    margin-bottom:20px;
+}
+
+.question{
+    font-size:28px;
+    font-weight:bold;
+    color:#ffffff;
+}
+
+.chapter{
+    color:#00ffe7;
+    font-size:18px;
+}
+
+.score{
+    text-align:center;
+    font-size:25px;
+    font-weight:bold;
+    color:#00ff99;
+}
+
+.stButton>button{
+    width:100%;
+    border-radius:15px;
+    height:55px;
+    border:none;
+    font-size:18px;
+    font-weight:bold;
+    background:linear-gradient(45deg,#00ffe7,#00aaff);
+    color:black;
+}
+
+.stButton>button:hover{
+    transform:scale(1.03);
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# ---------------- TITLE ----------------
+st.markdown('<div class="title">🎮 ગુજરાતી એક્ઝામ ગેમ 🎮</div>', unsafe_allow_html=True)
+
+# ---------------- QUESTIONS ----------------
+questions_data = {
+    "ધોરણ 10": {
+        "વિજ્ઞાન": [
+            {
+                "chapter": "રાસાયણિક પ્રતિક્રિયા",
+                "question": "મેગ્નેશિયમ રિબન હવામાં બળે ત્યારે શું બને છે?",
+                "options": [
+                    "મેગ્નેશિયમ ઓક્સાઇડ",
+                    "હાઇડ્રોજન",
+                    "ક્લોરીન",
+                    "કશું નહિ"
+                ],
+                "answer": "મેગ્નેશિયમ ઓક્સાઇડ"
+            },
+            {
+                "chapter": "જીવન પ્રક્રિયા",
+                "question": "પ્રકાશ સંશ્લેષણ માટે જવાબદાર રંગદ્રવ્ય કયું છે?",
+                "options": [
+                    "હીમોગ્લોબિન",
+                    "ક્લોરોફિલ",
+                    "મેલાનિન",
+                    "કેરોટિન"
+                ],
+                "answer": "ક્લોરોફિલ"
+            },
+            {
+                "chapter": "વિદ્યુત",
+                "question": "ઓહ્મનો નિયમ કોના સંબંધને દર્શાવે છે?",
+                "options": [
+                    "દબાણ અને તાપમાન",
+                    "પ્રવાહ અને વિદ્યુત દબાણ",
+                    "ભાર અને ગતિ",
+                    "પ્રકાશ અને અવાજ"
+                ],
+                "answer": "પ્રવાહ અને વિદ્યુત દબાણ"
+            }
         ],
-        "Ch 2: એસિડ, બેઇઝ અને ક્ષાર": [
-            {"question": "કોઈ દ્રાવણ લાલ લિટમસ પત્રને ભૂરું બનાવે છે, તો તેની pH કેટલી હોઈ શકે? (PYQ)", "options": ["1", "4", "5", "10"], "answer": "10"}
+
+        "ગણિત": [
+            {
+                "chapter": "ત્રિકોણમિતિ",
+                "question": "sin²θ + cos²θ = ?",
+                "options": [
+                    "0",
+                    "1",
+                    "2",
+                    "θ"
+                ],
+                "answer": "1"
+            },
+            {
+                "chapter": "સાંખ્યિકી",
+                "question": "સરેરાશ મેળવવા માટે શું જરૂરી છે?",
+                "options": [
+                    "કુલ રકમ",
+                    "આવર્તન",
+                    "કુલ મૂલ્યો અને સંખ્યા",
+                    "કશું નહિ"
+                ],
+                "answer": "કુલ મૂલ્યો અને સંખ્યા"
+            },
+            {
+                "chapter": "વૃત્ત",
+                "question": "વૃત્તનું ક્ષેત્રફળ શું છે?",
+                "options": [
+                    "πr²",
+                    "2πr",
+                    "πd",
+                    "r²"
+                ],
+                "answer": "πr²"
+            }
+        ]
+    },
+
+    "ધોરણ 9": {
+        "વિજ્ઞાન": [
+            {
+                "chapter": "કોષ",
+                "question": "કોષનો નિયંત્રણ કેન્દ્ર કયો છે?",
+                "options": [
+                    "સાયટોપ્લાઝમ",
+                    "કોષભિત્તિ",
+                    "કેન્દ્રક",
+                    "માઇટોકોન્ડ્રિયા"
+                ],
+                "answer": "કેન્દ્રક"
+            }
         ],
-        "Ch 2: બહુપદીઓ": [
-            {"question": "દ્વિઘાત બહુપદી x² + 7x + 10 ના શૂન્યોનો સરવાળો કેટલો થાય? (PYQ)", "options": ["7", "-7", "10", "-10"], "answer": "-7"}
+
+        "ગણિત": [
+            {
+                "chapter": "રેખાઓ અને ખૂણાઓ",
+                "question": "ત્રિકોણના આંતરિક ખૂણાનો સરવાળો કેટલો થાય?",
+                "options": [
+                    "90°",
+                    "180°",
+                    "360°",
+                    "270°"
+                ],
+                "answer": "180°"
+            }
         ]
     }
+}
 
-def generate_infinite_question(chapter_name):
-    a = random.randint(2, 9)
-    b = random.randint(2, 10)
-    return {
-        "question": f"[MATH CHALLENGE] {chapter_name} મુજબ, {a} ગુણ્યા {b} નો સાચો જવાબ શું થાય?",
-        "options": [str(a*b), str(a*b+4), str(a*b-2), str(a+b)],
-        "answer": str(a*b)
-    }
+# ---------------- SIDEBAR ----------------
+st.sidebar.title("🎯 મેનુ")
 
-if "player_name" not in st.session_state: st.session_state.player_name = "Aayush"
-if "score" not in st.session_state: st.session_state.score = 100
-if "current_match_questions" not in st.session_state: st.session_state.current_match_questions = []
-if "match_index" not in st.session_state: st.session_state.match_index = 0
-if "game_mode" not in st.session_state: st.session_state.game_mode = "SETUP"
-if "ai_open" not in st.session_state: st.session_state.ai_open = False
+player_name = st.sidebar.text_input("તમારું નામ લખો")
 
-# 🕹️ મેઈન ગેમ લૂપ
-if st.session_state.game_mode == "SETUP":
-    st.subheader("⚙️ ગેમ સેટઅપ લોબી")
-    name_input = st.text_input("✍️ તમારું નામ લખો:", value=st.session_state.player_name)
-    if name_input: st.session_state.player_name = name_input.strip()
-        
-    std_list = list(st.session_state.base_db.keys())
-    selected_std = st.selectbox("🎯 ધોરણ પસંદ કરો (Std 1 to 12):", std_list, index=std_list.index("Std 10") if "Std 10" in std_list else 0)
-    
-    sub_list = list(st.session_state.base_db[selected_std].keys())
-    selected_sub = st.selectbox("📚 વિષય (Subjects) પસંદ કરો:", sub_list)
-    
-    ch_list = st.session_state.base_db[selected_std][selected_sub]
-    selected_ch = st.selectbox("📖 પ્રકરણ (Chapters) પસંદ કરો:", ch_list)
-    
-    quiz_limit = st.selectbox("📊 આ મેચમાં કેટલા પ્રશ્નો રમવા છે?", [10, 20, 50])
-    
-    if st.button(f"🎮 ગેમ સ્ટાર્ટ કરો, {st.session_state.player_name}!"):
-        final_set = []
-        if selected_ch in st.session_state.real_questions:
-            final_set = list(st.session_state.real_questions[selected_ch])
-            random.shuffle(final_set)
-        
-        while len(final_set) < quiz_limit:
-            new_q = generate_infinite_question(selected_ch)
-            final_set.append(new_q)
-            
-        st.session_state.current_match_questions = final_set[:quiz_limit]
-        st.session_state.match_index = 0
-        st.session_state.score = 100
-        st.session_state.game_mode = "PLAYING"
+standard = st.sidebar.selectbox(
+    "ધોરણ પસંદ કરો",
+    list(questions_data.keys())
+)
+
+subject = st.sidebar.selectbox(
+    "વિષય પસંદ કરો",
+    list(questions_data[standard].keys())
+)
+
+# ---------------- LOAD QUESTIONS ----------------
+questions = questions_data[standard][subject]
+
+# ---------------- SESSION ----------------
+if "score" not in st.session_state:
+    st.session_state.score = 0
+
+if "question_index" not in st.session_state:
+    st.session_state.question_index = 0
+
+if "random_questions" not in st.session_state:
+    st.session_state.random_questions = random.sample(
+        questions,
+        len(questions)
+    )
+
+# ---------------- SCORE ----------------
+st.markdown(
+    f'<div class="score">🏆 સ્કોર : {st.session_state.score}</div>',
+    unsafe_allow_html=True
+)
+
+# ---------------- END GAME ----------------
+if st.session_state.question_index >= len(st.session_state.random_questions):
+
+    st.success("🎉 ગેમ પૂર્ણ થઈ ગઈ!")
+    st.balloons()
+
+    if player_name != "":
+        c.execute(
+            "INSERT INTO scores(name, score, standard, subject) VALUES(?,?,?,?)",
+            (
+                player_name,
+                st.session_state.score,
+                standard,
+                subject
+            )
+        )
+        conn.commit()
+
+    st.subheader("🏅 લીડરબોર્ડ")
+
+    leaderboard = c.execute(
+        "SELECT name, score FROM scores ORDER BY score DESC LIMIT 10"
+    ).fetchall()
+
+    for i, row in enumerate(leaderboard, start=1):
+        st.write(f"{i}. {row[0]} - {row[1]}")
+
+    if st.button("🔄 ફરીથી રમો"):
+        st.session_state.score = 0
+        st.session_state.question_index = 0
+        st.session_state.random_questions = random.sample(
+            questions,
+            len(questions)
+        )
         st.rerun()
 
-elif st.session_state.game_mode == "PLAYING":
-    st.subheader(f"🕹️ બેટલ Г્રાઉન્ડ - {st.session_state.player_name}")
-    if st.session_state.score <= 0:
-        st.error(f"💥 GAME OVER {st.session_state.player_name}!")
-        if st.button("🔄 લોબીમાં પાછા ફરો"):
-            st.session_state.game_mode = "SETUP"
+# ---------------- QUESTIONS ----------------
+else:
+
+    q = st.session_state.random_questions[
+        st.session_state.question_index
+    ]
+
+    st.markdown(
+        f'''
+        <div class="box">
+            <div class="chapter">📘 પ્રકરણ : {q['chapter']}</div>
+            <br>
+            <div class="question">{q['question']}</div>
+        </div>
+        ''',
+        unsafe_allow_html=True
+    )
+
+    selected = st.radio(
+        "જવાબ પસંદ કરો",
+        q["options"]
+    )
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        if st.button("✅ જવાબ સબમિટ કરો"):
+
+            if selected == q["answer"]:
+
+                st.session_state.score += 1
+
+                st.success("🎉 સાચો જવાબ!")
+
+            else:
+
+                st.error(f"❌ ખોટો જવાબ! સાચો જવાબ : {q['answer']}")
+
+            time.sleep(1)
+
+            st.session_state.question_index += 1
+
             st.rerun()
-    else:
-        idx = st.session_state.match_index
-        total_q = len(st.session_state.current_match_questions)
-        if idx < total_q:
-            current_q = st.session_state.current_match_questions[idx]
-            st.markdown(f"#### 🎯 સ્કોર: {st.session_state.score} | 📊 પ્રશ્ન: {idx + 1} / {total_q}")
-            st.subheader(current_q["question"])
-            user_choice = st.radio("વિકલ્પ પસંદ કરો:", current_q["options"], index=None, key=f"q_{idx}")
-            if user_choice is not None:
-                if user_choice == current_q["answer"]:
-                    st.session_state.score += 10
-                    st.toast("સાચો જવાબ! +10", icon="✅")
-                    st.session_state.match_index += 1
-                else:
-                    st.session_state.score -= 50
-                st.rerun()
-        else:
-            st.balloons()
-            st.success("🎉 તમે વિજેતા બન્યા!")
-            if st.button("🏁 નવી મેચ"):
-                st.session_state.game_mode = "SETUP"
-                st.rerun()
 
-# 🧠 --- ચાણક્ય AI સાઇડ ફોલ્ડર બોક્સ લોકેશન ---
-st.write("---")
-col_space, col_btn = st.columns([2.8, 1.2])
-with col_btn:
-    if st.button("🧠 ચાણક્ય AI ઓપન / ક્લોઝ", key="chanakya_btn"):
-        st.session_state.ai_open = not st.session_state.ai_open
-        st.rerun()
+    with col2:
 
-if st.session_state.ai_open:
-    st.markdown("<div class='ai-sidebar-box'>", unsafe_allow_html=True)
-    st.subheader("🧠 ચાણક્ય AI")
-    st.write(f"પ્રણામ {st.session_state.player_name} ભાઈ! હું ચાણક્ય AI છું. અહીં તમારા ડાઉટ્સ પૂછો!")
-    st.markdown("</div>", unsafe_allow_html=True)
+        if st.button("⏭ પ્રશ્ન છોડો"):
+
+            st.session_state.question_index += 1
+
+            st.rerun()
+
+# ---------------- FOOTER ----------------
+st.markdown("---")
+st.caption("⚡ ગુજરાતી બોર્ડ એક્ઝામ માટે બનાવેલ ગેમ")
+```
+
+# requirements.txt
+
+```txt
+streamlit
+```
