@@ -63,7 +63,7 @@ st.markdown("""
         box-shadow: 0 0 15px #00ffff;
     }
     
-    /* વચ્ચેથી કાળો પટ્ટો કાયમી માટે હટાવવાની ટ્રીક */
+    /* વચ્ચેથી નકામો કાળો પટ્ટો હટાવવાની ટ્રીક */
     div[data-testid="stVerticalBlock"] > div:empty {
         display: none !important;
     }
@@ -114,7 +114,7 @@ if "base_db" not in st.session_state:
             "ગુજરાતી (Gujarati)": ["Ch 1: મોરલી", "Ch 2: શરણાઈના સૂર", "Ch 4: જીવન અંજલિ થાજો"],
             "અંગ્રેજી (English)": ["Ch 1: Against the Odds", "Ch 2: The Human Robot"]
         },
-        "Std 11": {"ગણિત": ["Ch 1: ગણ"], "ભૌતિક વિજ્ઞાન": ["Ch 1: એકમ અને માપન"]},
+        "Std 11": {"ગણિત": ["Ch 1: ગણ"], "भૌતિક વિજ્ઞાન": ["Ch 1: એકમ અને માપન"]},
         "Std 12": {"ગણિત": ["Ch 1: સંબંધ અને વિધેય"], "ભૌતિક વિજ્ઞાન": ["Ch 1: વિદ્યુતભારો અને ક્ષેત્રો"]}
     }
 
@@ -143,7 +143,6 @@ if "real_questions" not in st.session_state:
         ]
     }
 
-# જો કોઈ નવો સબ્જેક્ટ કે નવું ચેપ્ટર હોય તો ઓટોમેટિક પ્રશ્નો જનરેટ કરવાનું એન્જિન
 def generate_infinite_question(chapter_name):
     if "ગણિત" in chapter_name or "બહુપદીઓ" in chapter_name or "સંખ્યાઓ" in chapter_name:
         a = random.randint(2, 9)
@@ -166,12 +165,12 @@ if "score" not in st.session_state: st.session_state.score = 100
 if "current_match_questions" not in st.session_state: st.session_state.current_match_questions = []
 if "match_index" not in st.session_state: st.session_state.match_index = 0
 if "game_mode" not in st.session_state: st.session_state.game_mode = "SETUP"
+if "ai_open" not in st.session_state: st.session_state.ai_open = False
 
 # 🕹️ મેઈન ગેમ કન્ટેન્ટ
 if st.session_state.game_mode == "SETUP":
     st.subheader("⚙️ ગેમ સેટઅપ લોબી")
     
-    # નામ ઇનપુટ - જે સીધું સેશન સ્ટેટ સાથે સિંક થાય છે
     name_input = st.text_input("✍️ તમારું નામ લખો:", value=st.session_state.player_name)
     if name_input:
         st.session_state.player_name = name_input.strip()
@@ -182,7 +181,6 @@ if st.session_state.game_mode == "SETUP":
     sub_list = list(st.session_state.base_db[selected_std].keys())
     selected_sub = st.selectbox("📚 વિષય (Subjects) પસંદ કરો:", sub_list)
     
-    # 🚨 ચેપ્ટર સિલેક્શન જે હવે પસંદ કરેલા વિષય મુજબ જ બદલાશે!
     ch_list = st.session_state.base_db[selected_std][selected_sub]
     selected_ch = st.selectbox("📖 પ્રકરણ (Chapters) પસંદ કરો:", ch_list)
     
@@ -207,7 +205,6 @@ if st.session_state.game_mode == "SETUP":
 elif st.session_state.game_mode == "PLAYING":
     st.subheader(f"🕹️ બેટલ ગ્રાઉન્ડ - {st.session_state.player_name}")
     
-    # 🚨 સ્કોર ગ્લિચ ફિક્સ લોજિક
     if st.session_state.score <= 0:
         st.error(f"💥 GAME OVER {st.session_state.player_name}! તમારા પોઈન્ટ્સ 0 થઈ ગયા.")
         if st.button("🔄 લોબીમાં પાછા ફરો", key="lobby_back_btn"):
@@ -241,6 +238,26 @@ elif st.session_state.game_mode == "PLAYING":
                 st.session_state.game_mode = "SETUP"
                 st.rerun()
 
-# 🧠 --- ચાણક્ય AI (જે હવે સાચે જ જમણી બાજુ નીચેના ખૂણામાં સેટ થઈ ગયું છે) ---
+# 🧠 --- ચાણક્ય AI બટન અને પોપઅપ જે રાઇટ સાઇડ સેટ થઈ ગયું છે ---
 st.write("---")
-col_space, col_btn = st.columns(
+col_space, col_btn = st.columns([2.8, 1.2])
+
+with col_btn:
+    if st.button("🧠 ચાણક્ય AI ઓપન / ક્લોઝ", key="chanakya_fixed_btn"):
+        st.session_state.ai_open = not st.session_state.ai_open
+        st.rerun()
+
+if st.session_state.ai_open:
+    st.markdown("<div class='ai-popup-box'>", unsafe_allow_html=True)
+    st.subheader("🧠 ચાણક્ય AI")
+    if "study_chat_history" not in st.session_state: st.session_state.study_chat_history = []
+    if not st.session_state.study_chat_history:
+        st.session_state.study_chat_history.append({"role": "assistant", "message": f"પ્રણામ {st.session_state.player_name} ભાઈ! હું ચાણક્ય AI છું. ભણવાનો કોઈ પણ પ્રશ્ન અહીં પૂછો!"})
+    for chat in st.session_state.study_chat_history:
+        with st.chat_message(chat["role"]): st.write(chat["message"])
+    if study_msg := st.chat_input("અહીં સવાલ પૂછો..."):
+        st.session_state.study_chat_history.append({"role": "user", "message": study_msg})
+        reply = f"ખૂબ જ ઉત્તમ પ્રશ્ન {st.session_state.player_name} ભાઈ! હું આ વિષયને પાકો કરવામાં તમારી પૂરી મદદ કરીશ."
+        st.session_state.study_chat_history.append({"role": "assistant", "message": reply})
+        st.rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
