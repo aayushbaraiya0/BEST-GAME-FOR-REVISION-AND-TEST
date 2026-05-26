@@ -1,272 +1,334 @@
 import streamlit as st
 import random
 
-# ---------------- PAGE CONFIG ----------------
+# =========================
+# પેજ સેટિંગ
+# =========================
+
 st.set_page_config(
     page_title="ગુજરાતી એક્ઝામ ગેમ",
     page_icon="🎮",
     layout="wide"
 )
 
-# ---------------- CSS ----------------
+# =========================
+# CSS UI
+# =========================
+
 st.markdown("""
 <style>
 
 .stApp{
-    background: linear-gradient(135deg,#020024,#090979,#000428);
-    color:white;
+    background: linear-gradient(135deg,#1e1b4b,#312e81,#7e22ce);
 }
 
 /* Sidebar */
 section[data-testid="stSidebar"]{
-    background:#d9d9d9;
-    color:black;
+    background:#d1d5db;
+    border-right:2px solid #444;
+}
+
+/* Main container */
+.main-box{
+    background:#070114;
+    border:2px solid cyan;
+    border-radius:25px;
+    padding:25px;
+    box-shadow:0px 0px 20px cyan;
+    margin-bottom:20px;
 }
 
 /* Title */
-.main-title{
+.title{
     text-align:center;
+    color:white;
     font-size:55px;
     font-weight:bold;
-    color:#00ffe7;
-    text-shadow:0px 0px 20px #00ffe7;
+    text-shadow:0px 0px 20px cyan;
+}
+
+/* Question box */
+.question-box{
+    background:#0b1020;
+    border:2px solid cyan;
+    border-radius:20px;
+    padding:25px;
     margin-top:20px;
+    box-shadow:0px 0px 15px #06b6d4;
+}
+
+/* Small heading */
+.small-head{
+    color:cyan;
+    font-size:24px;
+    font-weight:bold;
 }
 
 /* Score */
-.score-box{
-    text-align:center;
-    font-size:30px;
-    color:#00ff66;
+.score{
+    color:#22c55e;
+    font-size:35px;
     font-weight:bold;
 }
 
-/* Question Box */
-.question-box{
-    background:rgba(255,255,255,0.08);
-    padding:30px;
-    border-radius:25px;
-    border:1px solid rgba(255,255,255,0.1);
-    box-shadow:0px 0px 20px rgba(0,255,255,0.3);
-    margin-top:20px;
-}
-
-/* Buttons */
-.stButton>button{
+/* Button */
+.stButton button{
     width:100%;
-    background:#00d9ff;
-    color:black;
+    background:linear-gradient(90deg,#06b6d4,#2563eb);
+    color:white;
     border:none;
     border-radius:15px;
     padding:12px;
-    font-size:18px;
+    font-size:20px;
     font-weight:bold;
-    transition:0.3s;
 }
 
-.stButton>button:hover{
-    background:#00ff88;
-    transform:scale(1.03);
+.stButton button:hover{
+    transform:scale(1.02);
+    box-shadow:0px 0px 15px cyan;
 }
 
-/* Radio */
-div[role="radiogroup"] label{
+/* Radio text */
+.stRadio label{
+    color:white !important;
+    font-size:20px !important;
+}
+
+/* Selectbox */
+.stSelectbox label{
     color:white !important;
     font-size:18px !important;
+}
+
+/* Input */
+.stTextInput label{
+    color:white !important;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------- DATABASE ----------------
+# =========================
+# પ્રશ્ન ડેટા
+# =========================
 
-questions_db = {
+questions = {
 
-    "ધોરણ 10": {
+    "ધોરણ ૧૦": {
 
         "ગણિત": {
 
-            "પ્રકરણ 1": [
+            "વાસ્તવિક સંખ્યાઓ": [
                 {
-                    "question": "દ્વિઘાત સમીકરણનું સામાન્ય સ્વરૂપ શું છે?",
+                    "question": "૨ અને ૫ સિવાય અન્ય અવયવ ધરાવતી હરવાળી સંખ્યા કેવી દશાંશ આપે?",
                     "options": [
-                        "ax² + bx + c = 0",
-                        "ax + b = 0",
-                        "x + y = 0",
-                        "a²+b²=c²"
+                        "અસીમ આવર્ત દશાંશ",
+                        "સીમિત દશાંશ",
+                        "પૂર્ણાંક",
+                        "પ્રાકૃતિક સંખ્યા"
                     ],
-                    "answer": "ax² + bx + c = 0"
-                },
-                {
-                    "question": "પાઈનું મૂલ્ય કેટલું છે?",
-                    "options": [
-                        "3.14",
-                        "2.14",
-                        "1.14",
-                        "4.14"
-                    ],
-                    "answer": "3.14"
+                    "answer": "અસીમ આવર્ત દશાંશ"
                 }
             ],
 
-            "પ્રકરણ 2": [
+            "ત્રિકોણમિતિ": [
                 {
-                    "question": "પાયથાગોરસ સિદ્ધાંત કઈ આકૃતિ માટે છે?",
+                    "question": "sin²θ + cos²θ નું મૂલ્ય શું છે?",
                     "options": [
-                        "સમકોણ ત્રિકોણ",
-                        "વર્તુળ",
-                        "ચોરસ",
-                        "આયત"
+                        "૧",
+                        "૦",
+                        "૨",
+                        "અનંત"
                     ],
-                    "answer": "સમકોણ ત્રિકોણ"
+                    "answer": "૧"
+                }
+            ],
+
+            "વૃત્ત": [
+                {
+                    "question": "વૃત્તની ત્રિજ્યા ૭ હોય તો વ્યાસ કેટલો?",
+                    "options": [
+                        "૭",
+                        "૧૪",
+                        "૨૧",
+                        "૨૮"
+                    ],
+                    "answer": "૧૪"
                 }
             ]
         },
 
         "વિજ્ઞાન": {
 
-            "પ્રકરણ 1": [
+            "વિદ્યુત": [
                 {
                     "question": "ઓહમનો નિયમ કોના સંબંધને દર્શાવે છે?",
                     "options": [
-                        "પ્રવાહ અને વિદ્યુત દબાણ",
+                        "વિભવાંતર અને વિદ્યુત પ્રવાહ",
                         "ભાર અને ગતિ",
-                        "દબાણ અને તાપમાન",
-                        "પ્રકાશ અને અવાજ"
+                        "તાપ અને ઊર્જા",
+                        "દબાણ અને ઘનફળ"
                     ],
-                    "answer": "પ્રવાહ અને વિદ્યુત દબાણ"
+                    "answer": "વિભવાંતર અને વિદ્યુત પ્રવાહ"
                 }
             ],
 
-            "પ્રકરણ 2": [
+            "પ્રકાશ": [
                 {
-                    "question": "માનવ શરીરમાં હૃદયનું કાર્ય શું છે?",
+                    "question": "અવતલ દર્પણ ક્યાં ઉપયોગી છે?",
                     "options": [
-                        "રક્ત પંપ કરવું",
-                        "શ્વાસ લેવો",
-                        "ખોરાક પચાવવો",
-                        "વિચાર કરવો"
+                        "વાહનના હેડલાઇટમાં",
+                        "પંખામાં",
+                        "ઘડિયાળમાં",
+                        "દરવાજામાં"
                     ],
-                    "answer": "રક્ત પંપ કરવું"
-                }
-            ]
-        }
-    },
-
-    "ધોરણ 9": {
-
-        "ગણિત": {
-
-            "પ્રકરણ 1": [
-                {
-                    "question": "ત્રિકોણના કોણોનો કુલ સરવાળો કેટલો?",
-                    "options": [
-                        "180°",
-                        "90°",
-                        "360°",
-                        "270°"
-                    ],
-                    "answer": "180°"
+                    "answer": "વાહનના હેડલાઇટમાં"
                 }
             ]
         }
     }
 }
 
-# ---------------- SESSION ----------------
+# =========================
+# સેશન
+# =========================
 
 if "score" not in st.session_state:
     st.session_state.score = 0
 
-if "current_question" not in st.session_state:
-    st.session_state.current_question = None
+if "refresh" not in st.session_state:
+    st.session_state.refresh = 0
 
-# ---------------- SIDEBAR ----------------
+# =========================
+# Sidebar
+# =========================
 
-with st.sidebar:
+st.sidebar.markdown("## 🎮 રમત મેનુ")
 
-    st.markdown("## 🎯 મેનુ")
+name = st.sidebar.text_input("તમારું નામ લખો")
 
-    player_name = st.text_input("તમારું નામ લખો")
-
-    std = st.selectbox(
-        "ધોરણ પસંદ કરો",
-        list(questions_db.keys())
-    )
-
-    subject = st.selectbox(
-        "વિષય પસંદ કરો",
-        list(questions_db[std].keys())
-    )
-
-    chapter = st.selectbox(
-        "પ્રકરણ પસંદ કરો",
-        list(questions_db[std][subject].keys())
-    )
-
-# ---------------- QUESTIONS ----------------
-
-questions = questions_db[std][subject][chapter]
-
-if st.session_state.current_question is None:
-    st.session_state.current_question = random.choice(questions)
-
-q = st.session_state.current_question
-
-# ---------------- TITLE ----------------
-
-st.markdown(
-    "<div class='main-title'>🎮 ગુજરાતી એક્ઝામ ગેમ 🎮</div>",
-    unsafe_allow_html=True
+std = st.sidebar.selectbox(
+    "ધોરણ પસંદ કરો",
+    list(questions.keys())
 )
 
-st.markdown(
-    f"<div class='score-box'>🏆 સ્કોર : {st.session_state.score}</div>",
-    unsafe_allow_html=True
+subject = st.sidebar.selectbox(
+    "વિષય પસંદ કરો",
+    list(questions[std].keys())
 )
 
-# ---------------- QUESTION ----------------
-
-st.markdown("<div class='question-box'>", unsafe_allow_html=True)
-
-st.markdown(f"### 📘 {chapter}")
-
-st.markdown(f"# {q['question']}")
-
-answer = st.radio(
-    "જવાબ પસંદ કરો",
-    q["options"]
+chapter = st.sidebar.selectbox(
+    "પ્રકરણ પસંદ કરો",
+    list(questions[std][subject].keys())
 )
 
-st.markdown("</div>", unsafe_allow_html=True)
+# =========================
+# પ્રશ્ન પસંદ
+# =========================
 
-# ---------------- BUTTONS ----------------
+question_data = random.choice(
+    questions[std][subject][chapter]
+)
 
-col1, col2 = st.columns(2)
+question = question_data["question"]
+options = question_data["options"]
+answer = question_data["answer"]
+
+# =========================
+# UI Layout
+# =========================
+
+col1, col2 = st.columns([3,1])
+
+# =========================
+# LEFT SIDE
+# =========================
 
 with col1:
-    if st.button("✅ જવાબ સબમિટ કરો"):
 
-        if answer == q["answer"]:
-            st.success("સાચો જવાબ 🎉")
-            st.balloons()
-            st.session_state.score += 1
-        else:
-            st.error(f"ખોટો જવાબ 😢 સાચો જવાબ: {q['answer']}")
+    st.markdown("""
+    <div class="main-box">
+    <div class="title">
+    🎮 BEST GAME FOR REVISION AND TEST
+    </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="main-box">
+    <div class="small-head">
+    ⚙️ રમત સેટઅપ
+    </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown(f"""
+    <div class="question-box">
+    <div class="small-head">
+    📘 પ્રકરણ : {chapter}
+    </div>
+
+    <br>
+
+    <h2 style='color:white;'>
+    {question}
+    </h2>
+    </div>
+    """, unsafe_allow_html=True)
+
+    selected = st.radio(
+        "જવાબ પસંદ કરો",
+        options
+    )
+
+    c1, c2 = st.columns(2)
+
+    with c1:
+        if st.button("✅ જવાબ સબમિટ કરો"):
+
+            if selected == answer:
+                st.success("સાચો જવાબ 🎉")
+                st.session_state.score += 1
+            else:
+                st.error(f"ખોટો જવાબ ❌ સાચો જવાબ : {answer}")
+
+    with c2:
+        if st.button("🔄 નવો પ્રશ્ન"):
+
+            st.rerun()
+
+# =========================
+# RIGHT SIDE
+# =========================
 
 with col2:
-    if st.button("➡️ પ્રશ્ન બદલો"):
-        st.session_state.current_question = random.choice(questions)
-        st.rerun()
 
-# ---------------- FOOTER ----------------
+    st.markdown(f"""
+    <div class="main-box">
+    <div class="small-head">
+    🏆 સ્કોર સેન્ટર
+    </div>
 
-st.markdown(
-    """
-    <br><br>
-    <center style='color:gray'>
-    Made with ❤️ for Gujarat Students
-    </center>
-    """,
-    unsafe_allow_html=True
-)
+    <br>
+
+    <div class="score">
+    {st.session_state.score}
+    </div>
+
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="main-box">
+    <div class="small-head">
+    🧠 સ્ટડી મોડ
+    </div>
+
+    <br>
+
+    <p style='color:white;font-size:18px;'>
+    દરરોજ પ્રેક્ટિસ કરો અને પરીક્ષામાં વધુ ગુણ મેળવો.
+    </p>
+
+    </div>
+    """, unsafe_allow_html=True)
